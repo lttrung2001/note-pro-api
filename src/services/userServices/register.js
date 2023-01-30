@@ -10,12 +10,11 @@ const registerService = async (req, res) => {
     const newUser = req.body;
 
     // Validate that all inputs are provided
-    if (!newUser.email || !newUser.password || !newUser.fullName) {
+    if (!(newUser.email && newUser.password && newUser.fullName)) {
         res.status(HttpStatusCode.BAD_REQUEST).json({
             message: 'All inputs are required.',
             data: null
         });
-        return;
     }
 
     try {
@@ -38,12 +37,12 @@ const registerService = async (req, res) => {
         });
     } catch(error) {
         // Log error message
-        console.error('Error creating new user:', error);
+        console.error('Error creating new user:', error.message);
 
         // Return error message if email already exists
         res.status(HttpStatusCode.CONFLICT).json({
             message: 'Email already exists.',
-            data: error.message
+            data: null
         });
     }
 };
