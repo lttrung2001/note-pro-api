@@ -1,5 +1,6 @@
 const express = require('express')
 const fileUpload = require('express-fileupload')
+const registerService = require('./services/userServices/register')
 const loginService = require('./services/userServices/login')
 
 const app = express()
@@ -16,6 +17,8 @@ app.use(fileUpload({
    }
 }))
 
+app.get('/test/register', async (req, res) => {
+   return registerService(req, res)
 })
 
 app.get('/test/login', async (req, res) => {

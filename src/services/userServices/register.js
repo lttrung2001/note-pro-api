@@ -1,39 +1,52 @@
-// This is a service for registering a new user in a Firebase application. 
-// The service takes a request and response object as parameters and expects the request's body to contain an "email" and "password" field. 
-// It then creates a new user with the provided email and password using the Firebase Auth createUserWithEmailAndPassword() method and sends an email verification to the user. 
-// If there is an error, it logs the error and sends a response with a status code of 409 and a message of "Email already exists." 
-// The service is exported as a module to be used in other parts of the application.
+// This code implements the logic for a register service.
 
-const firebaseApp = require('./configs/firebaseConfig')
-const firebaseAuth = require('firebase/auth')
-const auth = firebaseAuth.getAuth(firebaseApp)
+// Import firebase authentication functions and HttpStatusCode utils
+const { sendEmailVerification, createUserWithEmailAndPassword, updateProfile } = require('firebase/auth');
+const HttpStatusCode = require('../../utils/HttpStatusCode');
 
+// Define the registerService function
 const registerService = async (req, res) => {
-    const account = {
-        email: req.body.email,
-        password: req.body.password
-        // Full name
+    // Extract user information from the request body
+    const newUser = req.body;
+
+    // Validate that all inputs are provided
+    if (!newUser.email || !newUser.password || !newUser.fullName) {
+        res.status(HttpStatusCode.BAD_REQUEST).json({
+            message: 'All inputs are required.',
+            data: null
+        });
+        return;
     }
 
-    if (!(account.email || account.password)) {
-        res.statusCode = 400
-        res.message = 'Email and password are required.'
-        res.send(null)
-    }
     try {
-        const credential = await firebaseAuth.createUserWithEmailAndPassword(auth, account.email, account.password)
-        const user = credential.user
-        console.log('Successfully created new user:', user);
-        firebaseAuth.sendEmailVerification(user)
-        res.statusCode = 200
-        res.message = 'Create account successfully.'
-        res.send(null)
-    } catch(error) {
-        console.log('Error creating new user:', error);
-        res.statusCode = 409
-        res.message = 'Email already exists.'
-        res.send(null)
-    }
-}
+        // Create a new user with email and password
+        const credential = await createUserWithEmailAndPassword(firebaseAuth, newUser.email, newUser.password);
+        const user = credential.user;
 
-module.exports = registerService
+        // Update the user profile with displayName
+        await updateProfile(user, {
+            displayName: req.body.fullName
+        });
+
+        // Send email verification to the new user
+        sendEmailVerification(user);
+
+        // Return success message
+        res.status(HttpStatusCode.OK).json({
+            message: 'Create account successfully.',
+            data: null
+        });
+    } catch(error) {
+        // Log error message
+        console.error('Error creating new user:', error);
+
+        // Return error message if email already exists
+        res.status(HttpStatusCode.CONFLICT).json({
+            message: 'Email already exists.',
+            data: error.message
+        });
+    }
+};
+
+// Export the registerService function
+module.exports = registerService;
