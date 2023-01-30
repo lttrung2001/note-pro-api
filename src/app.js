@@ -1,5 +1,6 @@
 const express = require('express')
 const fileUpload = require('express-fileupload')
+const loginService = require('./services/userServices/login')
 
 const app = express()
 
@@ -17,6 +18,8 @@ app.use(fileUpload({
 
 })
 
+app.get('/test/login', async (req, res) => {
+   return loginService(req, res)
 })
 
 app.listen(process.env.PORT || 3000, () => {
