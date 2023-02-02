@@ -17,6 +17,7 @@
     "http": "^0.0.1-security",
     "http-status-code": "^2.1.0",
     "http-status-codes": "^2.2.0",
-    "https": "^1.0.0"
+    "https": "^1.0.0",
+    "request": "^2.88.2"
   }
 }
