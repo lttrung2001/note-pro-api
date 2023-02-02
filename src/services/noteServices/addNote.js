@@ -14,6 +14,7 @@ const addNoteService = async (req, res) => {
         })
     }
     try {
+        // Batch using to write with atomic (transaction)
         const batch = firestore.batch()
         const newNoteReference = firestore.collection('Note').doc()
         const ownerReference = firestore.collection('Member').doc()
@@ -27,26 +28,36 @@ const addNoteService = async (req, res) => {
             role: 'owner',
             isPin: requestNote.isPin
         })
-        // if (req.files.images) {
-        //     const uploadImagePromises = []
-        //     const url = null
-        //     for (const image of [].concat(req.files.images)) {
-        //         url = `images/${uid}/${noteId}/${imageId}`
-        //         uploadImagePromises.push(
-        //             uploadImage(
-        //                 ref(storage, url),
-        //                 image
-        //             )
-        //         )
-        //     }
-        //     const urls = (await Promise.all(uploadImagePromises)).map((uploadResult) => getDownloadURL(uploadResult.ref))
-        // }
+        if (req.files.images) {
+            const uploadImagePromises = []
+            const imageUrl = null
+            for (const image of [].concat(req.files.images)) {
+                imageUrl = `images/${uid}/${newNoteReference.id}/${Date.now().toString()}-${image.name}`
+                uploadImagePromises.push(
+                    uploadImage(
+                        ref(storage, url),
+                        image
+                    )
+                )
+            }
+            const imagesData = (await Promise.all(uploadImagePromises)).map(async function (uploadResult) {
+                return {
+                    name: uploadResult.ref.name,
+                    url: await getDownloadURL(uploadResult.ref),
+                    noteId: newNoteReference.id
+                }
+            })
+            imagesData.forEach((imageData) => {
+                batch.create(firestore.collection('Image').doc(), imageData)
+            })
+        }
         batch.commit()
         res.status(HttpStatusCode.OK).json({
             message: 'Add note successfully.',
-            data: null
+            data: null // Get data
         })
     } catch (error) {
+        batch
         res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
             message: 'Add note failed.',
             data: null
