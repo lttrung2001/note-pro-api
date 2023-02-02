@@ -1,7 +1,6 @@
 const HttpStatusCode = require("../../utils/HttpStatusCode")
 const { firestore, storage } = require('../../configs/firestoreConfig')
 const { ref, uploadBytes, getDownloadURL } = require('firebase/storage')
-const { map } = require("@firebase/util")
 
 const addNoteService = async (req, res) => {
     const uid = req.user.uid
@@ -28,7 +27,7 @@ const addNoteService = async (req, res) => {
             role: 'owner',
             isPin: requestNote.isPin
         })
-        if (req.files.images) {
+        if (req.files && req.files.images) {
             const uploadImagePromises = []
             const imageUrl = null
             for (const image of [].concat(req.files.images)) {
@@ -57,7 +56,7 @@ const addNoteService = async (req, res) => {
             data: null // Get data
         })
     } catch (error) {
-        batch
+        console.log(error.message)
         res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
             message: 'Add note failed.',
             data: null
