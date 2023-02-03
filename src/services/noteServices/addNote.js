@@ -4,24 +4,24 @@ const { ref, uploadBytes, getDownloadURL } = require('firebase/storage')
 const addNoteService = async (uid, noteData, files) => {
     // Batch using to write with atomic (transaction)
     const batch = firestore.batch()
-    const newNoteReference = firestore.collection('Note').doc()
-    const ownerReference = firestore.collection('Member').doc()
-    batch.create(newNoteReference, {
+    const newNoteRef = firestore.collection('Note').doc()
+    const memberCollectionRef = newNoteRef.collection('Member')
+    batch.create(newNoteRef, {
         title: noteData.title,
         content: noteData.content,
         lastModified: Date.now()
     })
-    batch.create(ownerReference, {
+    batch.create(memberCollectionRef.doc(), {
         userId: uid,
-        noteId: newNoteReference.id,
         role: 'owner',
         isPin: noteData.isPin
     })
     if (files && files.images) {
+        const imageCollectionRef = newNoteRef.collection('Image')
         const uploadImagePromises = []
         const imageUrl = null
         for (const image of [].concat(files.images)) {
-            imageUrl = `images/${uid}/${newNoteReference.id}/${Date.now().toString()}-${image.name}`
+            imageUrl = `images/${uid}/${newNoteRef.id}/${Date.now().toString()}-${image.name}`
             uploadImagePromises.push(
                 uploadImage(
                     ref(storage, url),
@@ -33,16 +33,16 @@ const addNoteService = async (uid, noteData, files) => {
             return {
                 name: uploadResult.ref.name,
                 url: await getDownloadURL(uploadResult.ref),
-                noteId: newNoteReference.id
+                uploadTime: Date.parse(uploadResult.metadata.timeCreated)
             }
         })
         imagesData.forEach((imageData) => {
-            batch.create(firestore.collection('Image').doc(), imageData)
+            batch.create(imageCollectionRef.doc(), imageData)
         })
     }
     await batch.commit()
     return {
-        id: newNoteReference.id,
+        id: newNoteRef.id,
         title: noteData.title,
         content: noteData.content,
         isPin: noteData.isPin,
