@@ -1,67 +1,46 @@
-const HttpStatusCode = require("../../utils/HttpStatusCode")
 const { firestore, storage } = require('../../configs/firestoreConfig')
 const { ref, uploadBytes, getDownloadURL } = require('firebase/storage')
 
-const addNoteService = async (req, res) => {
-    const uid = req.user.uid
-    const requestNote = req.body
-    // Check at least 1 input required
-    if (!(requestNote.title || requestNote.content || req.files)) {
-        res.status(HttpStatusCode.BAD_REQUEST).json({
-            message: 'At least 1 input required.',
-            data: null
-        })
-    }
-    try {
-        // Batch using to write with atomic (transaction)
-        const batch = firestore.batch()
-        const newNoteReference = firestore.collection('Note').doc()
-        const ownerReference = firestore.collection('Member').doc()
-        batch.create(newNoteReference, {
-            title: requestNote.title,
-            content: requestNote.content
-        })
-        batch.create(ownerReference, {
-            userId: uid,
-            noteId: newNoteReference.id,
-            role: 'owner',
-            isPin: requestNote.isPin
-        })
-        if (req.files && req.files.images) {
-            const uploadImagePromises = []
-            const imageUrl = null
-            for (const image of [].concat(req.files.images)) {
-                imageUrl = `images/${uid}/${newNoteReference.id}/${Date.now().toString()}-${image.name}`
-                uploadImagePromises.push(
-                    uploadImage(
-                        ref(storage, url),
-                        image
-                    )
+const addNoteService = async (uid, noteData, files) => {
+    // Batch using to write with atomic (transaction)
+    const batch = firestore.batch()
+    const newNoteReference = firestore.collection('Note').doc()
+    const ownerReference = firestore.collection('Member').doc()
+    batch.create(newNoteReference, {
+        title: noteData.title,
+        content: noteData.content
+    })
+    batch.create(ownerReference, {
+        userId: uid,
+        noteId: newNoteReference.id,
+        role: 'owner',
+        isPin: noteData.isPin
+    })
+    if (files && files.images) {
+        const uploadImagePromises = []
+        const imageUrl = null
+        for (const image of [].concat(files.images)) {
+            imageUrl = `images/${uid}/${newNoteReference.id}/${Date.now().toString()}-${image.name}`
+            uploadImagePromises.push(
+                uploadImage(
+                    ref(storage, url),
+                    image
                 )
-            }
-            const imagesData = (await Promise.all(uploadImagePromises)).map(async function (uploadResult) {
-                return {
-                    name: uploadResult.ref.name,
-                    url: await getDownloadURL(uploadResult.ref),
-                    noteId: newNoteReference.id
-                }
-            })
-            imagesData.forEach((imageData) => {
-                batch.create(firestore.collection('Image').doc(), imageData)
-            })
+            )
         }
-        batch.commit()
-        res.status(HttpStatusCode.OK).json({
-            message: 'Add note successfully.',
-            data: null // Get data
+        const imagesData = (await Promise.all(uploadImagePromises)).map(async function (uploadResult) {
+            return {
+                name: uploadResult.ref.name,
+                url: await getDownloadURL(uploadResult.ref),
+                noteId: newNoteReference.id
+            }
         })
-    } catch (error) {
-        console.log(error.message)
-        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-            message: 'Add note failed.',
-            data: null
+        imagesData.forEach((imageData) => {
+            batch.create(firestore.collection('Image').doc(), imageData)
         })
     }
+    await batch.commit()
+    return {}
 }
 
 const uploadImage = async (ref, image) => {
