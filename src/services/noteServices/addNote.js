@@ -8,7 +8,8 @@ const addNoteService = async (uid, noteData, files) => {
     const ownerReference = firestore.collection('Member').doc()
     batch.create(newNoteReference, {
         title: noteData.title,
-        content: noteData.content
+        content: noteData.content,
+        lastModified: Date.now()
     })
     batch.create(ownerReference, {
         userId: uid,
@@ -40,7 +41,12 @@ const addNoteService = async (uid, noteData, files) => {
         })
     }
     await batch.commit()
-    return {}
+    return {
+        id: newNoteReference.id,
+        title: noteData.title,
+        content: noteData.content,
+        isPin: noteData.isPin,
+    }
 }
 
 const uploadImage = async (ref, image) => {
