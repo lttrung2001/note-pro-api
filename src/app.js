@@ -1,6 +1,5 @@
-const express = require("express");
-const fileUpload = require("express-fileupload");
-// const loginService = require("./services/userServices/login");
+import express from 'express'
+import fileUpload from 'express-fileupload'
 import initAPIRouter from "./routes/api.js";
 
 const app = express();
@@ -20,18 +19,6 @@ app.use(
 );
 
 initAPIRouter(app);
-
-// app.get("/test/register", async (req, res) => {
-//   return registerService(req, res);
-// });
-
-// app.get('/test/login', async (req, res) => {
-//    return loginService(req, res)
-// })
-
-app.get('/test/fetch-access-token', async (req, res) => {
-   return fetchAccessTokenService(req, res)
-})
 
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Server is listening on port: ${process.env.PORT || 3000}`);

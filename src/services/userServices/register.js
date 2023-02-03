@@ -1,8 +1,8 @@
 // This code implements the logic for a register service.
 
-// Import firebase authentication functions and HttpStatusCode utils
-const { sendEmailVerification, createUserWithEmailAndPassword, updateProfile } = require('firebase/auth');
-const HttpStatusCode = require('../../utils/HttpStatusCode');
+// Import firebase authentication functions and StatusCodes utils
+import { sendEmailVerification, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { StatusCodes } from 'http-status-codes'
 
 // Define the registerService function
 const registerService = async (req, res) => {
@@ -11,7 +11,7 @@ const registerService = async (req, res) => {
 
     // Validate that all inputs are provided
     if (!(newUser.email && newUser.password && newUser.fullName)) {
-        res.status(HttpStatusCode.BAD_REQUEST).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
             message: 'All inputs are required.',
             data: null
         });
@@ -31,7 +31,7 @@ const registerService = async (req, res) => {
         sendEmailVerification(user);
 
         // Return success message
-        res.status(HttpStatusCode.OK).json({
+        res.status(StatusCodes.OK).json({
             message: 'Create account successfully.',
             data: null
         });
@@ -40,7 +40,7 @@ const registerService = async (req, res) => {
         console.error('Error creating new user:', error.message);
 
         // Return error message if email already exists
-        res.status(HttpStatusCode.CONFLICT).json({
+        res.status(StatusCodes.CONFLICT).json({
             message: 'Email already exists.',
             data: null
         });
