@@ -6,10 +6,12 @@ const addNoteService = async (uid, noteData, files) => {
     const batch = firestore.batch()
     const newNoteRef = firestore.collection('notes').doc()
     const memberCollectionRef = newNoteRef.collection('members')
+
+    noteData.lastModified = Date.now()
     batch.create(newNoteRef, {
         title: noteData.title,
         content: noteData.content,
-        lastModified: Date.now()
+        lastModified: noteData.lastModified
     })
     batch.create(memberCollectionRef.doc(), {
         userId: uid,
@@ -45,6 +47,7 @@ const addNoteService = async (uid, noteData, files) => {
         id: newNoteRef.id,
         title: noteData.title,
         content: noteData.content,
+        lastModified: noteData.lastModified,
         isPin: noteData.isPin,
     }
 }
