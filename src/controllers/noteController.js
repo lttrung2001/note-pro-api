@@ -55,7 +55,7 @@ const editNote = async (req, res) => {
         data.role = memberRole
 
         res.status(StatusCodes.OK).json({
-            message: 'Edit note successfully',
+            message: 'Edit note successfully.',
             data: data
         })
     } catch (error) {
