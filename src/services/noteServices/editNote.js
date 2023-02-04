@@ -1,17 +1,33 @@
-import { firestore, storage } from '../../configs/firestoreConfig'
+import { firestore } from '../../configs/firestoreConfig'
 
-const editNoteService = async(noteData) => {
+const editNoteService = async(uid, noteData) => {
     const noteRef = firestore.collection('notes').doc(noteData.id)
-    await noteRef.update({
+    const memberRef = noteRef.collection('members').doc(uid)
+
+    noteData.lastModified = Date.now()
+
+    const editNotePromise =  noteRef.update({
         title: noteData.title,
         content: noteData.content,
-        lastModified: Date.now()
+        lastModified: noteData.lastModified,
     })
-    const noteSnapshot = await noteRef.get()
+
+    const updatePinStatusPromise = memberRef.update({
+        isPin: noteData.isPin
+    })
+
+    await Promise.all([
+        editNotePromise,
+        updatePinStatusPromise
+    ])
+
+    const memberSnapshot = await memberRef.get()
+
     return {
-        id: noteSnapshot.id,
-        title: noteSnapshot.get('title'),
-        content: noteSnapshot.get('content'),
-        lastModified: noteSnapshot.get('lastModified')
+        id: noteData.id,
+        title: noteData.title,
+        content: noteData.content,
+        lastModified: noteData.lastModified,
+        isPin: memberSnapshot.get('isPin')
     }
 }
