@@ -6,28 +6,24 @@ const editNoteService = async(uid, noteData) => {
 
     noteData.lastModified = Date.now()
 
-    const editNotePromise =  noteRef.update({
+    const batch = firestore.batch()
+    batch.update(noteRef, {
         title: noteData.title,
         content: noteData.content,
         lastModified: noteData.lastModified,
     })
-
-    const updatePinStatusPromise = memberRef.update({
+    batch.update(memberRef, {
         isPin: noteData.isPin
     })
-
-    await Promise.all([
-        editNotePromise,
-        updatePinStatusPromise
-    ])
-
-    const memberSnapshot = await memberRef.get()
+    await batch.commit()
 
     return {
         id: noteData.id,
         title: noteData.title,
         content: noteData.content,
         lastModified: noteData.lastModified,
-        isPin: memberSnapshot.get('isPin')
+        isPin: noteData.isPin
     }
 }
+
+module.exports = editNoteService

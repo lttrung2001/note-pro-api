@@ -40,7 +40,7 @@ const editNote = async (req, res) => {
             isPin: req.body.isPin
         }
         
-        const memberRole = await getMemberRole(uid)
+        const memberRole = await getMemberRole(uid, noteData.id)
         // Check role permission
         const canEdit = memberRole == 'owner' || memberRole == 'editor' ? true : false
 
