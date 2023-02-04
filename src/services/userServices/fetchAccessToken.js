@@ -1,11 +1,11 @@
-const HttpStatusCode = require("../../utils/HttpStatusCode")
-const request = require('request')
+import { StatusCodes } from 'http-status-codes'
+import request from 'request'
 
 const fetchAccessTokenService = async (req, res) => {
     const authorization = req.headers.authorization
         const token = authorization.split(' ')[1]
         if (!token) {
-            res.status(HttpStatusCode.BAD_REQUEST).json({
+            res.status(StatusCodes.BAD_REQUEST).json({
                 message: 'Token required.',
                 data: null
             })
@@ -18,13 +18,13 @@ const fetchAccessTokenService = async (req, res) => {
         }, (error, response, body) => {
             if (error) {
                 console.log(error.message)
-                res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                     message: error.message,
                     data: null
                 })
-            } else if (response.statusCode == HttpStatusCode.OK) {
+            } else if (response.statusCode == StatusCodes.OK) {
                 console.log(body)
-                res.status(HttpStatusCode.OK).json({
+                res.status(StatusCodes.OK).json({
                     message: 'Get access token successfully.',
                     data: body.id_token
                 })
