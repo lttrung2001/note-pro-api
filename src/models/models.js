@@ -5,6 +5,14 @@ class Note {
         this.content = content,
         this.lastModified = lastModified
     }
+
+    data() {
+        return {
+            title: this.title,
+            content: this.content,
+            lastModified: this.lastModified
+        }
+    }
 }
 
 class Member {
@@ -12,6 +20,13 @@ class Member {
         this.id = id
         this.role = role
         this.isPin = isPin
+    }
+
+    data() {
+        return {
+            role: this.role,
+            isPin: this.isPin
+        }
     }
 }
 

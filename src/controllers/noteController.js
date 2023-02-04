@@ -7,7 +7,8 @@ import editNoteService from '../services/noteServices/editNote'
 const addNote = async (req, res) => {
     const uid = req.user.uid
     // Note data includes title, content, isPin
-    const note = req.body
+    const note = new Note(null, req.body.title, req.body.content, Date.now())
+    const member = new Member(uid, 'owner', req.body.isPin)
     // Check at least 1 input required
     if (!(note.title || note.content || req.files)) {
         res.status(StatusCodes.BAD_REQUEST).json({
@@ -17,7 +18,7 @@ const addNote = async (req, res) => {
     } 
     try {
         // Call service
-        const data = await addNoteService(uid, note, req.files)
+        const data = await addNoteService(note, member, req.files)
         res.status(StatusCodes.OK).json({
             message: 'Add note successfully.',
             data: data
