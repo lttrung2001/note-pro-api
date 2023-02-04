@@ -31,3 +31,5 @@ const editNoteService = async(uid, noteData) => {
         isPin: memberSnapshot.get('isPin')
     }
 }
+
+module.exports = editNoteService
