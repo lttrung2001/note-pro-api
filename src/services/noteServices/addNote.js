@@ -39,8 +39,8 @@ const addNoteService = async (note, member, files) => {
         title: note.title,
         content: note.content,
         lastModified: note.lastModified,
-        isPin: note.isPin,
-        role: 'owner'
+        isPin: member.isPin,
+        role: member.role
     }
 }
 
