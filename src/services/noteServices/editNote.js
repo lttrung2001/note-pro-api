@@ -5,14 +5,8 @@ const editNoteService = async(note, member) => {
     const memberRef = noteRef.collection('members').doc(member.id)
 
     const batch = firestore.batch()
-    batch.update(noteRef, {
-        title: note.title,
-        content: note.content,
-        lastModified: note.lastModified,
-    })
-    batch.update(memberRef, {
-        isPin: member.isPin
-    })
+    batch.update(noteRef, note.body())
+    batch.update(memberRef, member.body())
     await batch.commit()
 
     return {
