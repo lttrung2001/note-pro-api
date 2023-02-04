@@ -1,28 +1,27 @@
 import { firestore } from '../../configs/firestoreConfig'
 
-const editNoteService = async(uid, noteData) => {
-    const noteRef = firestore.collection('notes').doc(noteData.id)
-    const memberRef = noteRef.collection('members').doc(uid)
-
-    noteData.lastModified = Date.now()
+const editNoteService = async(note, member) => {
+    const noteRef = firestore.collection('notes').doc(note.id)
+    const memberRef = noteRef.collection('members').doc(member.id)
 
     const batch = firestore.batch()
     batch.update(noteRef, {
-        title: noteData.title,
-        content: noteData.content,
-        lastModified: noteData.lastModified,
+        title: note.title,
+        content: note.content,
+        lastModified: note.lastModified,
     })
     batch.update(memberRef, {
-        isPin: noteData.isPin
+        isPin: member.isPin
     })
     await batch.commit()
 
     return {
-        id: noteData.id,
-        title: noteData.title,
-        content: noteData.content,
-        lastModified: noteData.lastModified,
-        isPin: noteData.isPin
+        id: note.id,
+        title: note.title,
+        content: note.content,
+        lastModified: note.lastModified,
+        isPin: member.isPin,
+        role: member.role
     }
 }
 
