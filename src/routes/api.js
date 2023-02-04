@@ -1,11 +1,6 @@
-import express from "express";
-import userController from "../controllers/userController";
-
-let router = express.Router();
-
+import userRouter from './userRouter'
 const initAPIRouter = (app) => {
-  router.post("/register", userController.registerUser);
-  return app.use("/api/v1", router);
+  app.use("/api/v1", userRouter());
 };
 
 export default initAPIRouter;
