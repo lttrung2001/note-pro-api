@@ -1,5 +1,5 @@
-const { firestore, storage } = require('../../configs/firestoreConfig')
-const { ref, uploadBytes, getDownloadURL } = require('firebase/storage')
+import { firestore, storage } from '../../configs/firestoreConfig'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const addNoteService = async (uid, noteData, files) => {
     // Batch using to write with atomic (transaction)
