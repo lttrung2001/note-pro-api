@@ -7,8 +7,8 @@ const addNoteService = async (note, member, files) => {
     const newNoteRef = firestore.collection('notes').doc()
     const memberCollectionRef = newNoteRef.collection('members')
 
-    batch.create(newNoteRef, note.body())
-    batch.create(memberCollectionRef.doc(member.id), member.body())
+    batch.create(newNoteRef, note.data())
+    batch.create(memberCollectionRef.doc(member.id), member.data())
     if (files && files.images) {
         const imageCollectionRef = newNoteRef.collection('images')
         const uploadImagePromises = []
