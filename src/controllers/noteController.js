@@ -39,16 +39,21 @@ const editNote = async (req, res) => {
             content: req.body.content,
             isPin: req.body.isPin
         }
+        
         const memberRole = await getMemberRole(uid)
         // Check role permission
         const canEdit = memberRole == 'owner' || memberRole == 'editor' ? true : false
+
         if (!canEdit) {
             res.status(StatusCodes.FORBIDDEN).json({
                 message: 'User does not have permission.',
                 data: null
             })
         }
+
         const data = await editNoteService(uid, noteData)
+        data.role = memberRole
+
         res.status(StatusCodes.OK).json({
             message: 'Edit note successfully',
             data: data
