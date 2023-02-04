@@ -13,8 +13,7 @@ const addNoteService = async (uid, noteData, files) => {
         content: noteData.content,
         lastModified: noteData.lastModified
     })
-    batch.create(memberCollectionRef.doc(), {
-        userId: uid,
+    batch.create(memberCollectionRef.doc(uid), {
         role: 'owner',
         isPin: noteData.isPin
     })
@@ -49,6 +48,7 @@ const addNoteService = async (uid, noteData, files) => {
         content: noteData.content,
         lastModified: noteData.lastModified,
         isPin: noteData.isPin,
+        role: 'owner'
     }
 }
 
