@@ -1,4 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
+import { Member, Note } from '../models/models'
 import getMemberRole from '../services/memberServices/getMemberRole'
 import addNoteService from '../services/noteServices/addNote'
 import editNoteService from '../services/noteServices/editNote'
@@ -6,9 +7,10 @@ import editNoteService from '../services/noteServices/editNote'
 const addNote = async (req, res) => {
     const uid = req.user.uid
     // Note data includes title, content, isPin
-    const noteData = req.body
+    const note = new Note(null, req.body.title, req.body.content, Date.now())
+    const member = new Member(uid, 'owner', req.body.isPin)
     // Check at least 1 input required
-    if (!(noteData.title || noteData.content || req.files)) {
+    if (!(note.title || note.content || req.files)) {
         res.status(StatusCodes.BAD_REQUEST).json({
             message: 'At least 1 input required.',
             data: null
@@ -16,7 +18,7 @@ const addNote = async (req, res) => {
     } 
     try {
         // Call service
-        const data = await addNoteService(uid, noteData, req.files)
+        const data = await addNoteService(note, member, req.files)
         res.status(StatusCodes.OK).json({
             message: 'Add note successfully.',
             data: data
@@ -33,14 +35,11 @@ const addNote = async (req, res) => {
 const editNote = async (req, res) => {
     try {
         const uid = req.user.uid
-        const noteData = {
-            id: req.query.id,
-            title: req.body.title,
-            content: req.body.content,
-            isPin: req.body.isPin
-        }
+        const note = new Note(req.query.id, req.body.title, req.body.content, Date.now())
         
-        const memberRole = await getMemberRole(uid, noteData.id)
+        const memberRole = await getMemberRole(uid, note.id)
+        const member = new Member(uid, memberRole, req.body.isPin)
+
         // Check role permission
         const canEdit = memberRole == 'owner' || memberRole == 'editor' ? true : false
 
@@ -51,8 +50,7 @@ const editNote = async (req, res) => {
             })
         }
 
-        const data = await editNoteService(uid, noteData)
-        data.role = memberRole
+        const data = await editNoteService(note, member)
 
         res.status(StatusCodes.OK).json({
             message: 'Edit note successfully.',
