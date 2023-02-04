@@ -4,8 +4,8 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 const addNoteService = async (uid, noteData, files) => {
     // Batch using to write with atomic (transaction)
     const batch = firestore.batch()
-    const newNoteRef = firestore.collection('Note').doc()
-    const memberCollectionRef = newNoteRef.collection('Member')
+    const newNoteRef = firestore.collection('notes').doc()
+    const memberCollectionRef = newNoteRef.collection('members')
     batch.create(newNoteRef, {
         title: noteData.title,
         content: noteData.content,
@@ -17,7 +17,7 @@ const addNoteService = async (uid, noteData, files) => {
         isPin: noteData.isPin
     })
     if (files && files.images) {
-        const imageCollectionRef = newNoteRef.collection('Image')
+        const imageCollectionRef = newNoteRef.collection('images')
         const uploadImagePromises = []
         const imageUrl = null
         for (const image of [].concat(files.images)) {
