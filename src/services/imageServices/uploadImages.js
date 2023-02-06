@@ -1,11 +1,11 @@
 import { storage } from '../../configs/firestoreConfig'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { Image } from '../../models/models'
-const uploadImages = async (images, uid) => {
+const uploadImages = async (uid, noteId, images) => {
     const uploadImagesPromises = []
     const imageUrl = null
     for (const image of [].concat(images)) {
-        imageUrl = `images/${member.id}/${newNoteRef.id}/${Date.now().toString()}-${image.name}`
+        imageUrl = `images/${uid}/${noteId}/${Date.now().toString()}-${image.name}`
         uploadImagesPromises.push(
             uploadBytes(ref(storage, imageUrl),image.data, { contentType: 'image' })
         )
