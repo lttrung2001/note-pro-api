@@ -88,12 +88,12 @@ const deleteNote = async (req, res) => {
                 message: 'User does not have permission.',
                 data: null
             })
+        } else {
+            res.status(StatusCodes.OK).json({
+                message: 'Delete note successfully.',
+                data: data
+            })
         }
-
-        res.status(StatusCodes.OK).json({
-            message: 'Delete note successfully.',
-            data: data
-        })
     } catch (error) {
         console.log(error.message)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
