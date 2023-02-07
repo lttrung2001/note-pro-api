@@ -1,9 +1,8 @@
-import { Note } from '../../models/models'
 import { firestore, storage } from '../../configs/firestoreConfig'
 import { listAll, deleteObject, ref } from 'firebase/storage'
 import getMemberRole from '../memberServices/getMemberRole'
 const deleteNoteService = async (note, member) => {
-    member.role = getMemberRole(member.id, note.id)
+    member.role = await getMemberRole(member.id, note.id)
     const canDelete = member.role == 'owner' ? true : false
     if (!canDelete) {
         return null
@@ -11,19 +10,29 @@ const deleteNoteService = async (note, member) => {
 
     const noteRef = firestore.collection('notes').doc(note.id)
     const noteSnapshot = await noteRef.get()
-    note = new Note(noteRef.id, noteSnapshot.get('title'), noteSnapshot.get('content'), noteSnapshot.get('lastModified'))
-    await noteRef.delete()
+    const memberSnapshot = await noteRef.collection('members').doc(member.id).get()
+    
+    await firestore.recursiveDelete(noteRef)
 
-    const listRef = ref(storage, `images/${member.id}/${note.id}`)
+    const numberImages = (await noteRef.collection('images').get()).docs.length
+    if (numberImages > 0) {
+        const listRef = ref(storage, `images/${member.id}/${noteRef.id}`)
+        const result = await listAll(listRef)
+        const deleteImagesPromises = []
+        result.items.forEach((itemRef) => {
+            deleteImagesPromises.push(deleteObject(itemRef))
+        })
+        await Promise.all(deleteImagesPromises)
+    }
 
-    const result = await listAll(listRef)
-    const deleteImagesPromises = []
-    result.items.forEach((itemRef) => {
-        deleteImagesPromises.push(deleteObject(itemRef))
-    })
-    await Promise.all(deleteImagesPromises)
-
-    return note
+    return {
+        id: noteRef.id,
+        title: noteSnapshot.get('title'),
+        content: noteSnapshot.get('content'),
+        lastModified: noteSnapshot.get('lastModified'),
+        isPin: memberSnapshot.get('isPin'),
+        role: memberSnapshot.get('role')
+    }
 }
 
 module.exports = deleteNoteService
