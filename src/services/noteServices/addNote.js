@@ -1,5 +1,5 @@
-import { firestore, storage } from '../../configs/firestoreConfig'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { firestore } from '../../configs/firestoreConfig'
+import uploadImagesService from '../imageServices/uploadImages'
 
 const addNoteService = async (note, member, files) => {
     // Batch using to write with atomic (transaction)
@@ -11,26 +11,9 @@ const addNoteService = async (note, member, files) => {
     batch.create(memberCollectionRef.doc(member.id), member.data())
     if (files && files.images) {
         const imageCollectionRef = newNoteRef.collection('images')
-        const uploadImagePromises = []
-        const imageUrl = null
-        for (const image of [].concat(files.images)) {
-            imageUrl = `images/${member.id}/${newNoteRef.id}/${Date.now().toString()}-${image.name}`
-            uploadImagePromises.push(
-                uploadImage(
-                    ref(storage, url),
-                    image
-                )
-            )
-        }
-        const imagesData = (await Promise.all(uploadImagePromises)).map(async function (uploadResult) {
-            return {
-                name: uploadResult.ref.name,
-                url: await getDownloadURL(uploadResult.ref),
-                uploadTime: Date.parse(uploadResult.metadata.timeCreated)
-            }
-        })
-        imagesData.forEach((imageData) => {
-            batch.create(imageCollectionRef.doc(), imageData)
+        const images = await uploadImagesService(member.id, newNoteRef.id, files.images)
+        images.forEach((image) => {
+            batch.create(imageCollectionRef.doc(), image.data())
         })
     }
     await batch.commit()
@@ -42,12 +25,6 @@ const addNoteService = async (note, member, files) => {
         isPin: member.isPin,
         role: member.role
     }
-}
-
-const uploadImage = async (ref, image) => {
-    return uploadBytes(ref, image.data, {
-        contentType: 'image'
-    })
 }
 
 module.exports = addNoteService
