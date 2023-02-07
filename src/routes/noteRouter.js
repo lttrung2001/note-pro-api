@@ -5,6 +5,7 @@ const userRouter = () => {
     const router = Router()
     router.post('/add-note', noteController.addNote)
     router.put('/edit-note', noteController.editNote)
+    router.delete('/delete-note', noteController.deleteNote)
     
     return router
 }

@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 import { Member, Note } from '../models/models'
 import addNoteService from '../services/noteServices/addNote'
 import editNoteService from '../services/noteServices/editNote'
+import deleteNoteService from '../services/noteServices/deleteNote'
 
 const addNote = async (req, res) => {
     const uid = req.user.uid
@@ -67,7 +68,43 @@ const editNote = async (req, res) => {
     }
 }
 
+const deleteNote = async (req, res) => {
+    try {
+        const uid = req.user.uid
+        const note = new Note(req.query.id)
+        const member = new Member(uid)
+
+        if (!(note.id || member.id)) {
+            res.status(StatusCodes.BAD_REQUEST).json({
+                message: 'All input required.',
+                data: null
+            })
+        }
+        
+        const data = await deleteNoteService(note, member)
+
+        if (data == null) {
+            res.status(StatusCodes.FORBIDDEN).json({
+                message: 'User does not have permission.',
+                data: null
+            })
+        }
+
+        res.status(StatusCodes.OK).json({
+            message: 'Delete note successfully.',
+            data: data
+        })
+    } catch (error) {
+        console.log(error.message)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: 'Delete note failed.',
+            data: null
+        })
+    }
+}
+
 module.exports = {
     addNote,
-    editNote
+    editNote,
+    deleteNote
 }
