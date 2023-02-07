@@ -19,7 +19,8 @@ const uploadImages = async (uid, noteId, images) => {
             uid
         )
     })
-    return imagesPromises
+    const images = await Promise.all(imagesPromises)
+    return images
 }
 
 module.exports = uploadImages
