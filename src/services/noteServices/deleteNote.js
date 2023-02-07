@@ -11,11 +11,11 @@ const deleteNoteService = async (note, member) => {
 
     const noteRef = firestore.collection('notes').doc(note.id)
     const noteSnapshot = await noteRef.get()
-    note = new Note(noteRef.id, noteSnapshot.get('title'), noteSnapshot.get('content'), noteSnapshot.get('lastModified'))
+    const memberSnapshot = await noteRef.collection('members').doc(member.id).get()
+    
     await noteRef.delete()
 
-    const listRef = ref(storage, `images/${member.id}/${note.id}`)
-
+    const listRef = ref(storage, `images/${member.id}/${noteRef.id}`)
     const result = await listAll(listRef)
     const deleteImagesPromises = []
     result.items.forEach((itemRef) => {
@@ -23,7 +23,14 @@ const deleteNoteService = async (note, member) => {
     })
     await Promise.all(deleteImagesPromises)
 
-    return note
+    return {
+        id: noteRef.id,
+        title: noteSnapshot.get('title'),
+        content: noteSnapshot.get('content'),
+        lastModified: noteSnapshot.get('lastModified'),
+        isPin: memberSnapshot.get('isPin'),
+        role: memberSnapshot.get('role')
+    }
 }
 
 module.exports = deleteNoteService
