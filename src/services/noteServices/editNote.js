@@ -1,6 +1,12 @@
 import { firestore } from '../../configs/firestoreConfig'
+import getMemberRole from '../memberServices/getMemberRole'
 
 const editNoteService = async(note, member) => {
+    member.role = getMemberRole(member.id, note.id)
+    const canEdit = member.role == 'owner' || member.role == 'editor' ? true : false
+    if (!canEdit) {
+        return null
+    }
     const noteRef = firestore.collection('notes').doc(note.id)
     const memberRef = noteRef.collection('members').doc(member.id)
 

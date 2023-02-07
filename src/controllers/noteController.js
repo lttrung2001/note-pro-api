@@ -1,6 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
 import { Member, Note } from '../models/models'
-import getMemberRole from '../services/memberServices/getMemberRole'
 import addNoteService from '../services/noteServices/addNote'
 import editNoteService from '../services/noteServices/editNote'
 
@@ -36,21 +35,24 @@ const editNote = async (req, res) => {
     try {
         const uid = req.user.uid
         const note = new Note(req.query.id, req.body.title, req.body.content, Date.now())
+
+        if (!note.id || !(note.title || note.content || req.files)) {
+            res.status(StatusCodes.BAD_REQUEST).json({
+                message: 'Id and at least 1 input for note required.',
+                data: null
+            })
+        }
         
-        const memberRole = await getMemberRole(uid, note.id)
-        const member = new Member(uid, memberRole, req.body.isPin)
+        const member = new Member(uid, null, req.body.isPin)
 
-        // Check role permission
-        const canEdit = memberRole == 'owner' || memberRole == 'editor' ? true : false
+        const data = await editNoteService(note, member)
 
-        if (!canEdit) {
+        if (data == null) {
             res.status(StatusCodes.FORBIDDEN).json({
                 message: 'User does not have permission.',
                 data: null
             })
         }
-
-        const data = await editNoteService(note, member)
 
         res.status(StatusCodes.OK).json({
             message: 'Edit note successfully.',
