@@ -1,5 +1,5 @@
-import express from 'express'
-import fileUpload from 'express-fileupload'
+import express from "express";
+import fileUpload from "express-fileupload";
 import initAPIRouter from "./routes/api.js";
 
 const app = express();
