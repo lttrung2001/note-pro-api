@@ -30,4 +30,22 @@ class Member {
     }
 }
 
-export { Note, Member }
+class Image {
+    constructor(id, name, url, uploadTime, uploadBy) {
+        this.id = id
+        this.name = name
+        this.url = url
+        this.uploadTime = uploadTime
+        this.uploadBy = uploadBy
+    }
+    data() {
+        return {
+            name: this.name,
+            url: this.url,
+            uploadTime: this.uploadTime,
+            uploadBy: this.uploadBy
+        }
+    }
+}
+
+export { Note, Member, Image }
