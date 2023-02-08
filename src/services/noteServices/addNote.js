@@ -10,10 +10,7 @@ const addNoteService = async (note, member, files) => {
       "At least 1 input required to create new note."
     );
   } else if (!member.id) {
-    return new ServiceResult(
-      StatusCodes.BAD_REQUEST,
-      "UID required."
-    );
+    return new ServiceResult(StatusCodes.BAD_REQUEST, "UID required.");
   }
   try {
     // Batch using to write with atomic (transaction)
@@ -38,16 +35,16 @@ const addNoteService = async (note, member, files) => {
       });
     }
     await batch.commit();
-    return {
+    return new ServiceResult(StatusCodes.OK, "Add note successfully.", {
       id: newNoteRef.id,
       title: note.title,
       content: note.content,
       lastModified: note.lastModified,
       isPin: member.isPin,
       role: member.role,
-    };
+    });
   } catch (error) {
-    throw new Error('Add note failed.')
+    throw new Error("Add note failed.");
   }
 };
 
