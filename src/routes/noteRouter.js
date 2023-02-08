@@ -6,6 +6,7 @@ const userRouter = () => {
     router.post('/add-note', noteController.addNote)
     router.put('/edit-note', noteController.editNote)
     router.delete('/delete-note', noteController.deleteNote)
+    router.get('/get-note', noteController.getNoteDetails)
     
     return router
 }

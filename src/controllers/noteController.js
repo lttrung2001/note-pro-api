@@ -3,6 +3,7 @@ import { Member, Note } from '../models/models'
 import addNoteService from '../services/noteServices/addNote'
 import editNoteService from '../services/noteServices/editNote'
 import deleteNoteService from '../services/noteServices/deleteNote'
+import getNoteDetailsService from '../services/noteServices/getNoteDetails'
 
 const addNote = async (req, res) => {
     try {
@@ -46,8 +47,22 @@ const deleteNote = async (req, res) => {
     }
 }
 
+const getNoteDetails = async (req, res) => {
+    try {
+        const noteId = req.query.id
+        const memberId = req.user.uid
+        const getNoteDetailsServiceResult = await getNoteDetailsService(noteId, memberId)
+        res.status(getNoteDetailsServiceResult.code).json(getNoteDetailsServiceResult.body())
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message
+        })
+    }
+}
+
 module.exports = {
     addNote,
     editNote,
-    deleteNote
+    deleteNote,
+    getNoteDetails
 }
