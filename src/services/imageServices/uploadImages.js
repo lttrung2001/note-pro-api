@@ -41,11 +41,7 @@ const uploadImages = async (uid, noteId, files) => {
       images
     );
   } catch (error) {
-    console.log(`uploadImagesService error: ${error.message}`)
-    return new ServiceResult(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Upload images failed.",
-    )
+    throw new Error("Upload images failed.");
   }
 };
 
