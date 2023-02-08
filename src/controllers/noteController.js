@@ -5,29 +5,17 @@ import editNoteService from '../services/noteServices/editNote'
 import deleteNoteService from '../services/noteServices/deleteNote'
 
 const addNote = async (req, res) => {
-    const uid = req.user.uid
-    // Note data includes title, content, isPin
-    const note = new Note(null, req.body.title, req.body.content, Date.now())
-    const member = new Member(uid, 'owner', req.body.isPin)
-    // Check at least 1 input required
-    if (!(note.title || note.content || req.files)) {
-        res.status(StatusCodes.BAD_REQUEST).json({
-            message: 'At least 1 input required.',
-            data: null
-        })
-    } 
     try {
-        // Call service
-        const data = await addNoteService(note, member, req.files)
-        res.status(StatusCodes.OK).json({
-            message: 'Add note successfully.',
-            data: data
-        })
+        const uid = req.user.uid
+        const title = req.body.title
+        const content = req.body.content
+        const isPin = req.body.isPin
+        const files = req.files
+        const addNoteServiceResult = await addNoteService(title, content, isPin, files, uid)
+        res.status(addNoteServiceResult.code).json(addNoteServiceResult.body())
     } catch (error) {
-        console.log(error.message)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: 'Add note failed.',
-            data: null
+            message: error.message
         })
     }
 }
