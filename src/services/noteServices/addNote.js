@@ -3,11 +3,16 @@ import { firestore } from "../../configs/firestoreConfig";
 import { Member, Note } from "../../models/models";
 import uploadImagesService from "../imageServices/uploadImages";
 
-const addNoteService = async (title, content, isPin, files, uid) => {
-  if (!(title || content || files)) {
+const addNoteService = async (note, member, files) => {
+  if (!(note.title || note.content || files)) {
     return new ServiceResult(
       StatusCodes.BAD_REQUEST,
-      "At least 1 input required."
+      "At least 1 input required to create new note."
+    );
+  } else if (!member.id) {
+    return new ServiceResult(
+      StatusCodes.BAD_REQUEST,
+      "UID required."
     );
   }
   try {

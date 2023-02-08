@@ -6,12 +6,10 @@ import deleteNoteService from '../services/noteServices/deleteNote'
 
 const addNote = async (req, res) => {
     try {
-        const uid = req.user.uid
-        const title = req.body.title
-        const content = req.body.content
-        const isPin = req.body.isPin
+        const note = new Note(null, req.body.title, req.body.content, Date.now())
+        const member = new Member(uid, 'owner', req.body.isPin)
         const files = req.files
-        const addNoteServiceResult = await addNoteService(title, content, isPin, files, uid)
+        const addNoteServiceResult = await addNoteService(note, member, files)
         res.status(addNoteServiceResult.code).json(addNoteServiceResult.body())
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
