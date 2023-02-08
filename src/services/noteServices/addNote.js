@@ -18,9 +18,6 @@ const addNoteService = async (note, member, files) => {
     const newNoteRef = firestore.collection("notes").doc();
     const memberCollectionRef = newNoteRef.collection("members");
 
-    const note = new Note(null, title, content, Date.now());
-    const member = new Member(uid, "owner", isPin);
-
     batch.create(newNoteRef, note.data());
     batch.create(memberCollectionRef.doc(member.id), member.data());
     const imageCollectionRef = newNoteRef.collection("images");
