@@ -39,11 +39,7 @@ const getImagesService = async (noteId, pageIndex, limit) => {
       images
     );
   } catch (error) {
-    console.log(`getImagesService error: ${error.message}`);
-    return new ServiceResult(
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      "Get images failed."
-    );
+    throw new Error('Get images failed.')
   }
 };
 
