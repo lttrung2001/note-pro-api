@@ -3,8 +3,8 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Image } from "../../models/models";
 import { ServiceResult } from "../../models/serviceResult";
 import { StatusCodes } from "http-status-codes";
-const uploadImages = async (uid, noteId, files) => {
-  if (!(uid && noteId && files && files.images)) {
+const uploadImages = async (uid, noteId, images) => {
+  if (!(uid && noteId && images)) {
     return new ServiceResult(
       StatusCodes.BAD_REQUEST,
       "At least 1 image required."
