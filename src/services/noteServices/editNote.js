@@ -10,8 +10,8 @@ const editNoteService = async (note, member, files) => {
     );
   }
   try {
-    // Call member service to get role
-    member.role = getMemberRole(member.id, note.id);
+    // Call member service to get info of member
+    // member = await ...
     const canEdit =
       member.role == "owner" || member.role == "editor" ? true : false;
     if (!canEdit) {
