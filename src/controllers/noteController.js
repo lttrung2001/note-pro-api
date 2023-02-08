@@ -20,36 +20,15 @@ const addNote = async (req, res) => {
 
 const editNote = async (req, res) => {
     try {
-        const uid = req.user.uid
         const note = new Note(req.query.id, req.body.title, req.body.content, Date.now())
-
-        if (!note.id || !(note.title || note.content || req.files)) {
-            res.status(StatusCodes.BAD_REQUEST).json({
-                message: 'Id and at least 1 input for note required.',
-                data: null
-            })
-        }
+        const member = new Member(req.user.uid, null, req.body.isPin)
+        const files = req.files
         
-        const member = new Member(uid, null, req.body.isPin)
-
-        const data = await editNoteService(note, member)
-
-        if (data == null) {
-            res.status(StatusCodes.FORBIDDEN).json({
-                message: 'User does not have permission.',
-                data: null
-            })
-        }
-
-        res.status(StatusCodes.OK).json({
-            message: 'Edit note successfully.',
-            data: data
-        })
+        const editNoteServiceResult = await editNoteService(note, member, files)
+        res.status(editNoteServiceResult.code).json(editNoteServiceResult.body())
     } catch (error) {
-        console.log(error.message)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: 'Edit note failed.',
-            data: null
+            message: error.message,
         })
     }
 }
