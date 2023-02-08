@@ -32,3 +32,5 @@ const getNoteDetailsService = async (noteId, memberId) => {
     throw new Error("Get note details failed.");
   }
 };
+
+module.exports = getNoteDetailsService
