@@ -35,35 +35,13 @@ const editNote = async (req, res) => {
 
 const deleteNote = async (req, res) => {
     try {
-        const uid = req.user.uid
-        const note = new Note(req.query.id)
-        const member = new Member(uid)
-
-        if (!(note.id || member.id)) {
-            res.status(StatusCodes.BAD_REQUEST).json({
-                message: 'All input required.',
-                data: null
-            })
-        }
-        
-        const data = await deleteNoteService(note, member)
-
-        if (data == null) {
-            res.status(StatusCodes.FORBIDDEN).json({
-                message: 'User does not have permission.',
-                data: null
-            })
-        } else {
-            res.status(StatusCodes.OK).json({
-                message: 'Delete note successfully.',
-                data: data
-            })
-        }
+        const noteId = req.query.noteId
+        const memberId = req.user.uid
+        const deleteNoteServiceResult = await deleteNoteService(noteId, memberId)
+        res.status(deleteNoteServiceResult.code).json(deleteNoteServiceResult.body())
     } catch (error) {
-        console.log(error.message)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: 'Delete note failed.',
-            data: null
+            message: error.message
         })
     }
 }
