@@ -4,9 +4,10 @@ import getMemberDetailsService from "../services/memberServices/getMemberDetails
 
 const addMember = async (req, res) => {
   try {
+    const uid = req.user.uid
     const noteId = req.query.noteId
     const { email, role } = req.body
-    const addMemberResult = await addMemberService(noteId, email, role)
+    const addMemberResult = await addMemberService(noteId, email, role, uid)
     res.status(addMemberResult.code).json({
       message: addMemberResult.message,
       data: addMemberResult.data
