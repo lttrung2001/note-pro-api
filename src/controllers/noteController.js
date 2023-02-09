@@ -9,7 +9,7 @@ import getNotesService from '../services/noteServices/getNotes'
 const addNote = async (req, res) => {
     try {
         const note = new Note(null, req.body.title, req.body.content, Date.now())
-        const member = new Member(null, 'owner', req.body.isPin, 'req.user.uid')
+        const member = new Member(null, 'owner', req.body.isPin, req.user.uid)
         const files = req.files
         const addNoteServiceResult = await addNoteService(note, member, files)
         res.status(addNoteServiceResult.code).json({
@@ -26,7 +26,7 @@ const addNote = async (req, res) => {
 const editNote = async (req, res) => {
     try {
         const note = new Note(req.query.id, req.body.title, req.body.content, Date.now())
-        const member = new Member(null, null, req.body.isPin, 'req.user.uid')
+        let member = new Member(null, null, req.body.isPin, 'req.user.uid')
         const files = req.files
         
         const editNoteServiceResult = await editNoteService(note, member, files)
@@ -44,7 +44,7 @@ const editNote = async (req, res) => {
 const deleteNote = async (req, res) => {
     try {
         const noteId = req.query.noteId
-        const memberId = 'req.user.uid'
+        const memberId = req.user.uid
         const deleteNoteServiceResult = await deleteNoteService(noteId, memberId)
         res.status(deleteNoteServiceResult.code).json({
             message: deleteNoteServiceResult.message,
@@ -60,7 +60,7 @@ const deleteNote = async (req, res) => {
 const getNoteDetails = async (req, res) => {
     try {
         const noteId = req.query.id
-        const memberId = 'req.user.uid'
+        const memberId = req.user.uid
         const getNoteDetailsServiceResult = await getNoteDetailsService(noteId, memberId)
         res.status(getNoteDetailsServiceResult.code).json({
             message: getNoteDetailsServiceResult.message,
@@ -75,7 +75,7 @@ const getNoteDetails = async (req, res) => {
 
 const getNotes = async (req, res) => {
     try {
-        const uid = 'req.user.uid'
+        const uid = req.user.uid
         const getNotesServiceResult = await getNotesService(uid)
         res.status(getNotesServiceResult.code).json({
             message: getNotesServiceResult.message,
