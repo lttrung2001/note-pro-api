@@ -5,6 +5,7 @@ import editNoteService from '../services/noteServices/editNote'
 import deleteNoteService from '../services/noteServices/deleteNote'
 import getNoteDetailsService from '../services/noteServices/getNoteDetails'
 import getNotesService from '../services/noteServices/getNotes'
+import searchNotesService from '../services/noteServices/searchNotes'
 
 const addNote = async (req, res) => {
     try {
@@ -88,10 +89,27 @@ const getNotes = async (req, res) => {
     }
 }
 
+const searchNotes = async (req, res) => {
+    try {
+        const uid = req.user.uid
+        const keySearch = req.query.key
+        const searchNotesServiceResult = await searchNotesService(keySearch, uid)
+        res.status(searchNotesServiceResult.code).json({
+            message: searchNotesServiceResult.message,
+            data: searchNotesServiceResult.data
+        })
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message
+        })
+    }
+}
+
 module.exports = {
     addNote,
     editNote,
     deleteNote,
     getNoteDetails,
-    getNotes
+    getNotes,
+    searchNotes
 }
