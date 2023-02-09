@@ -16,7 +16,7 @@ const loginService = async (userInput) => {
     return {
       message: "All inputs are required.",
       data: null,
-      errCode: 400,
+      code: StatusCodes.BAD_REQUEST,
     };
   }
 
@@ -35,14 +35,10 @@ const loginService = async (userInput) => {
     // Checking if the email is verified
     if (!user.emailVerified) {
       // Responding with a 403 Forbidden error if the email is not verified
-      // res.status(StatusCodes.FORBIDDEN).json({
-      //   message: "Email not verified.",
-      //   data: null,
-      // });
       return {
         message: "Email not verified.",
         data: null,
-        errCode: 403,
+        code: StatusCodes.FORBIDDEN,
       };
     }
 
@@ -51,21 +47,17 @@ const loginService = async (userInput) => {
     return {
       message: "Login successfully.",
       refreshToken,
-      errCode: 200,
+      code: StatusCodes.OK,
     };
   } catch (error) {
     // Logging the error
     console.log("error from login", error.message);
 
     // Responding with a 401 Unauthorized error if the login fails
-    // res.status(StatusCodes.UNAUTHORIZED).json({
-    //   message: "Email or password is incorrect.",
-    //   data: null,
-    // });
     return {
       message: "Email or password is incorrect.",
       data: null,
-      errCode: 401,
+      code: StatusCodes.UNAUTHORIZED,
     };
   }
 };

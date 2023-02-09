@@ -49,13 +49,13 @@ const loginUser = async (req, res) => {
     let data = await loginService(user);
     // Return success message
 
-    if (data && data.errCode === 200) {
+    if (data && data.code === StatusCodes.OK) {
       // Return success message
       return res.status(StatusCodes.OK).json({
         message: data.message,
         data: data.refreshToken,
       });
-    } else if (data && data.errCode === 401) {
+    } else if (data && data.code === StatusCodes.UNAUTHORIZED) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
         message: data.message,
       });

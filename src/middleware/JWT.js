@@ -3,7 +3,11 @@ import { StatusCodes } from "http-status-codes";
 
 export const checkAccessToken = async (req, res, next) => {
   let authorization = req.headers.authorization;
-  if (!authorization) {
+  if (
+    !authorization ||
+    authorization.split(" ")[0] !== "Bearer" ||
+    authorization.split(" ")[1] === ""
+  ) {
     return res.status(StatusCodes.UNAUTHORIZED).json({
       message: "Invalid authorization token",
     });
@@ -13,6 +17,7 @@ export const checkAccessToken = async (req, res, next) => {
     .verifyIdToken(accessToken)
     .then((decodedToken) => {
       console.log("decoded", decodedToken);
+      req.user.uid = decodedToken.uid;
       return next();
     })
     .catch((error) => {
