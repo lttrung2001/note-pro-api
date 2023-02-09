@@ -1,28 +1,36 @@
 import { StatusCodes } from "http-status-codes";
 import { firestore } from "../../configs/firestoreConfig";
-import { ServiceResult } from "../../models/serviceResult";
 
 const getNotesService = async (uid) => {
   if (!uid) {
-    return new ServiceResult(StatusCodes.BAD_REQUEST, "UID required.");
+    return {
+      code: StatusCodes.BAD_REQUEST,
+      message: "UID required."
+    }
   }
   try {
-    const querySnapshot = firestore
+    const querySnapshot = await firestore
       .collectionGroup("members")
-      .where("id", "==", uid)
+      .where('uid','==',uid)
       .get();
-
-    const data = (await querySnapshot).docs.map(async (document) => {
-      const noteSnapshot = await document.ref.parent.parent.get();
-      return new ServiceResult(StatusCodes.OK, "Get notes successfully.", {
+    
+    let data = querySnapshot.docs.map(async (document) => {
+      const noteSnapshot = await document.ref.parent.parent.get()
+      return {
         id: noteSnapshot.id,
         ...noteSnapshot.data(),
         ...document.data(),
-      });
+      }
     });
+    data = await Promise.all(data)
 
-    return new ServiceResult(StatusCodes.OK, "Get notes successfully.", data);
+    return {
+      code: StatusCodes.OK,
+      message: "Get notes successfully.",
+      data: data
+    }
   } catch (error) {
+    console.error(`Get notes error: ${error}`)
     throw new Error("Get notes failed.");
   }
 };

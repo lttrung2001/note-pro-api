@@ -2,21 +2,21 @@ import { firestore } from "../../configs/firestoreConfig";
 import { StatusCodes } from "http-status-codes";
 
 const getImagesService = async (noteId, pageIndex, limit) => {
-  if (!(noteId && pageIndex && limit)) {
-    return new ServiceResult(
-      StatusCodes.BAD_REQUEST,
-      "Note Id, Page Index and Limit required."
-    );
+  if (!noteId) {
+    return {
+      code: StatusCodes.BAD_REQUEST,
+      message: "Note Id required."
+    }
   } else if (pageIndex < 0) {
-    return new ServiceResult(
-      StatusCodes.BAD_REQUEST,
-      "Page Index must be equal or greater than 0."
-    );
+    return {
+      code: StatusCodes.BAD_REQUEST,
+      message: "Page Index must be equal or greater than 0."
+    }
   } else if (limit <= 0) {
-    return new ServiceResult(
-      StatusCodes.BAD_REQUEST,
-      "Limit must be greater than 0."
-    );
+    return {
+      code: StatusCodes.BAD_REQUEST,
+      message: "Limit must be greater than 0."
+    }
   }
   try {
     const noteRef = firestore.collection("notes").doc(noteId);
@@ -33,12 +33,13 @@ const getImagesService = async (noteId, pageIndex, limit) => {
         ...image.data(),
       };
     });
-    return new ServiceResult(
-      StatusCodes.OK,
-      "Get images successfully.",
-      images
-    );
+    return {
+      code: StatusCodes.OK,
+      message: "Get images successfully.",
+      data: images
+    }
   } catch (error) {
+    console.error(`Get images error: ${error}`)
     throw new Error('Get images failed.')
   }
 };

@@ -1,46 +1,56 @@
 import { StatusCodes } from "http-status-codes";
 import { firestore } from "../../configs/firestoreConfig";
-import { Member, Note } from "../../models/models";
 import uploadImagesService from "../imageServices/uploadImages";
 
 const addNoteService = async (note, member, files) => {
   if (!(note.title || note.content || files)) {
-    return new ServiceResult(
-      StatusCodes.BAD_REQUEST,
-      "At least 1 input required to create new note."
-    );
-  } else if (!member.id) {
-    return new ServiceResult(StatusCodes.BAD_REQUEST, "UID required.");
+    return {
+      code: StatusCodes.BAD_REQUEST,
+      message: "At least 1 input required to create new note."
+    }
+  } else if (!member.uid) {
+    return {
+      code: StatusCodes.BAD_REQUEST,
+      message: "UID required."
+    }
   }
   try {
     // Batch using to write with atomic (transaction)
     const batch = firestore.batch();
     const newNoteRef = firestore.collection("notes").doc();
-    const memberCollectionRef = newNoteRef.collection("members");
+    const newMemberRef = newNoteRef.collection("members").doc()
 
     batch.create(newNoteRef, note.data());
-    batch.create(memberCollectionRef.doc(member.id), member.data());
+    batch.create(newMemberRef, member.data());
     const imageCollectionRef = newNoteRef.collection("images");
-    const uploadImagesServiceResult = await uploadImagesService(
-      member.id,
-      newNoteRef.id,
-      files.images
-    );
-    if (uploadImagesServiceResult.code == StatusCodes.OK) {
-      images.forEach((image) => {
-        batch.create(imageCollectionRef.doc(), image.data());
-      });
+    if (files && files.images) {
+      const uploadImagesServiceResult = await uploadImagesService(
+        member.uid,
+        newNoteRef.id,
+        files.images
+      );
+      if (uploadImagesServiceResult.code == StatusCodes.OK) {
+        uploadImagesServiceResult.data.forEach((image) => {
+          batch.create(imageCollectionRef.doc(), image.data());
+        });
+      }
     }
+    
     await batch.commit();
-    return new ServiceResult(StatusCodes.OK, "Add note successfully.", {
-      id: newNoteRef.id,
-      title: note.title,
-      content: note.content,
-      lastModified: note.lastModified,
-      isPin: member.isPin,
-      role: member.role,
-    });
+    return {
+      code: StatusCodes.OK,
+      message: "Add note successfully.",
+      data: {
+        id: newNoteRef.id,
+        title: note.title,
+        content: note.content,
+        lastModified: note.lastModified,
+        isPin: member.isPin,
+        role: member.role,
+      }
+    }
   } catch (error) {
+    console.error(`Add note error: ${error}`)
     throw new Error("Add note failed.");
   }
 };

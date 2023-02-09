@@ -1,14 +1,13 @@
 import { storage } from "../../configs/firestoreConfig";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Image } from "../../models/models";
-import { ServiceResult } from "../../models/serviceResult";
 import { StatusCodes } from "http-status-codes";
 const uploadImages = async (uid, noteId, images) => {
   if (!(uid && noteId && images)) {
-    return new ServiceResult(
-      StatusCodes.BAD_REQUEST,
-      "At least 1 image required."
-    );
+    return {
+      code: StatusCodes.BAD_REQUEST,
+      message: "At least 1 image required."
+    }
   }
   try {
     const uploadImagesPromises = [];
@@ -34,13 +33,14 @@ const uploadImages = async (uid, noteId, images) => {
         );
       }
     );
-    const images = await Promise.all(imagesPromises);
-    return new ServiceResult(
-      StatusCodes.OK,
-      "Upload images successfully.",
-      images
-    );
+    const data = await Promise.all(imagesPromises);
+    return {
+      code: StatusCodes.OK,
+      message: "Upload images successfully.",
+      data: data
+    }
   } catch (error) {
+    console.error(`Upload images error: ${error}`)
     throw new Error("Upload images failed.");
   }
 };
