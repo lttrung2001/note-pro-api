@@ -7,7 +7,7 @@ import deleteNoteService from '../services/noteServices/deleteNote'
 const addNote = async (req, res) => {
     try {
         const note = new Note(null, req.body.title, req.body.content, Date.now())
-        const member = new Member(uid, 'owner', req.body.isPin)
+        const member = new Member(req.user.uid, 'owner', req.body.isPin)
         const files = req.files
         const addNoteServiceResult = await addNoteService(note, member, files)
         res.status(addNoteServiceResult.code).json(addNoteServiceResult.body())
