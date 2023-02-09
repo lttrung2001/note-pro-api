@@ -16,11 +16,14 @@ const getNotesService = async (uid) => {
     
     let data = querySnapshot.docs.map(async (document) => {
       const noteSnapshot = await document.ref.parent.parent.get()
-      return {
+      const result = {
         id: noteSnapshot.id,
         ...noteSnapshot.data(),
         ...document.data(),
       }
+      delete result.uid
+
+      return result
     });
     data = await Promise.all(data)
 

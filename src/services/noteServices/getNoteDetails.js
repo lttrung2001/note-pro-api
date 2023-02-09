@@ -22,6 +22,8 @@ const getNoteDetailsService = async (noteId, uid) => {
       ...memberSnapshot.data(),
       images: images.data,
     };
+    delete noteDetails.uid
+    
     return {
       code: StatusCodes.OK,
       message: "Get note details successfully.",
