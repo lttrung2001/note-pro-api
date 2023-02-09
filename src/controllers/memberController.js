@@ -1,5 +1,23 @@
 import { StatusCodes } from "http-status-codes";
+import addMemberService from '../services/memberServices/addMember'
 import getMemberDetailsService from "../services/memberServices/getMemberDetails";
+
+const addMember = async (req, res) => {
+  try {
+    const noteId = req.query.noteId
+    const { email, role } = req.body
+    const addMemberResult = await addMemberService(noteId, email, role)
+    res.status(addMemberResult.code).json({
+      message: addMemberResult.message,
+      data: addMemberResult.data
+    })
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message
+    })
+  }
+}
+
 const getMemberDetails = async (req, res) => {
   try {
     const noteId = req.query.noteId;
@@ -17,5 +35,6 @@ const getMemberDetails = async (req, res) => {
 };
 
 module.exports = {
+  addMember,
   getMemberDetails,
 }
