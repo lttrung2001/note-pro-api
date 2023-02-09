@@ -16,16 +16,18 @@ class Note {
 }
 
 class Member {
-    constructor(id, role, isPin) {
+    constructor(id, role, isPin, uid) {
         this.id = id
         this.role = role
         this.isPin = isPin
+        this.uid = uid
     }
 
     data() {
         return {
             role: this.role,
-            isPin: this.isPin
+            isPin: this.isPin,
+            uid: this.uid
         }
     }
 }
