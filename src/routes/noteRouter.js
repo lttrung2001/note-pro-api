@@ -7,6 +7,7 @@ const userRouter = () => {
     router.put('/edit-note', noteController.editNote)
     router.delete('/delete-note', noteController.deleteNote)
     router.get('/get-note', noteController.getNoteDetails)
+    router.get('/get-notes', noteController.getNotes)
     
     return router
 }
