@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { adminAuth, firestore } from "../../configs/firestoreConfig";
 import { Member } from "../../models/models";
 
-const addMemberService = async (noteId, email, role) => {
+const addMemberService = async (noteId, email, role, uid) => {
   if (!(noteId && email && role)) {
     return {
       code: StatusCodes.BAD_REQUEST,
@@ -15,6 +15,24 @@ const addMemberService = async (noteId, email, role) => {
       return {
         code: StatusCodes.FORBIDDEN,
         message: "This user haven't verify email yet.",
+      };
+    }
+    const canAddMember =
+      (
+        await firestore
+          .collection("notes")
+          .doc(noteId)
+          .collection("members")
+          .where("uid", "==", uid)
+          .limit(1)
+          .get()
+      ).docs[0].get("role") == "owner"
+        ? true
+        : false;
+    if (!canAddMember) {
+      return {
+        code: StatusCodes.FORBIDDEN,
+        message: "User does not have permission to add new member.",
       };
     }
     const member = new Member(null, role, false, userRecord.uid);
@@ -41,4 +59,4 @@ const addMemberService = async (noteId, email, role) => {
   }
 };
 
-module.exports = addMemberService
+module.exports = addMemberService;
