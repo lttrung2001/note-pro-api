@@ -1,11 +1,20 @@
+import { deleteObject } from "firebase/storage";
 import { StatusCodes } from "http-status-codes";
 import { firestore } from "../../configs/firestoreConfig";
+import { ref, deleteObject } from 'firebase/storage'
+import uploadImagesService from '../imageServices/uploadImages';
 
-const editNoteService = async (note, member, files) => {
-  if (!note.id || !(note.title || note.content || files)) {
+const editNoteService = async (note, member, files, deleteImageIds) => {
+  if (!note.id) {
     return {
       code: StatusCodes.BAD_REQUEST,
-      message: "Note ID and at least 1 input required to edit note."
+      message: "Note ID required."
+    }
+  }
+  if (!(note.title || note.content || files || !deleteImageIds)) {
+    return {
+      code: StatusCodes.BAD_REQUEST,
+      message: "At least 1 input required."
     }
   }
   try {
@@ -25,6 +34,28 @@ const editNoteService = async (note, member, files) => {
     const batch = firestore.batch();
     batch.update(noteRef, note.data());
     batch.update(memberRef, member.data());
+    const imageCollectionRef = noteRef.collection("images");
+    if (deleteImageIds) {
+      deleteImageIds.forEach(async (id) =>{
+        const imageRef = imageCollectionRef.doc(id);
+        const url = (await imageRef.get()).get('url');
+        batch.delete(imageRef);
+        deleteObject(ref(storage, url));
+      })
+    }
+    if (files && files.images) {
+      const uploadImagesServiceResult = await uploadImagesService(
+        member.uid,
+        noteRef.id,
+        files.images
+      );
+      if (uploadImagesServiceResult.code == StatusCodes.OK) {
+        uploadImagesServiceResult.data.forEach((image) => {
+          batch.create(imageCollectionRef.doc(), image.data());
+        });
+      }
+    }
+
     await batch.commit();
 
     return {
