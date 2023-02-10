@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import addMemberService from '../services/memberServices/addMember'
 import editMemberService from '../services/memberServices/editMember'
 import deleteMemberService from '../services/memberServices/deleteMember'
+import getMemberService from '../services/memberServices/getMembers'
 import getMemberDetailsService from "../services/memberServices/getMemberDetails";
 
 const addMember = async (req, res) => {
@@ -54,6 +55,21 @@ const deleteMemeber = async (req, res) => {
   }
 }
 
+const getMembers = async (req, res) => {
+  try {
+    const { noteId, pageIndex, limit } = req.query
+    const getMembersResult = await getMemberService(noteId, pageIndex, limit);
+    res.status(getMembersResult.code).json({
+      message: getMembersResult.message,
+      data: getMembersResult.data
+    })
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message
+    })
+  }
+}
+
 const getMemberDetails = async (req, res) => {
   try {
     const noteId = req.query.noteId;
@@ -74,5 +90,6 @@ module.exports = {
   addMember,
   editMember,
   deleteMemeber,
+  getMembers,
   getMemberDetails,
 }
