@@ -32,9 +32,12 @@ const editNoteService = async (note, member, files, deleteImageIds) => {
     const memberRef = (await noteRef.collection("members").where('uid','==',member.uid).limit(1).get()).docs[0].ref
 
     const batch = firestore.batch();
+    // Update note data
     batch.update(noteRef, note.data());
+    // Update member data (isPin)
     batch.update(memberRef, member.data());
     const imageCollectionRef = noteRef.collection("images");
+    // Delete images
     if (deleteImageIds) {
       deleteImageIds.forEach(async (id) =>{
         const imageRef = imageCollectionRef.doc(id);
@@ -43,6 +46,7 @@ const editNoteService = async (note, member, files, deleteImageIds) => {
         deleteObject(ref(storage, url));
       })
     }
+    // Add images
     if (files && files.images) {
       const uploadImagesServiceResult = await uploadImagesService(
         member.uid,
