@@ -1,22 +1,23 @@
 import { firestore, storage } from "../../configs/firestoreConfig";
 import { listAll, deleteObject, ref } from "firebase/storage";
 import { StatusCodes } from "http-status-codes";
+import getMemberDetails from "../memberServices/getMemberDetails";
 const deleteNoteService = async (noteId, memberId) => {
   if (!(noteId && memberId)) {
     return {
       code: StatusCodes.BAD_REQUEST,
-      message: "Note ID and member ID required to delete note."
-    }
+      message: "Note ID and member ID required to delete note.",
+    };
   }
   try {
     // Call member service to get info of member
-    //   const member = await ...
+    const member = (await getMemberDetails(noteId, memberId)).data
     const canDelete = member.role == "owner" ? true : false;
     if (!canDelete) {
       return {
         code: StatusCodes.FORBIDDEN,
-        message: "User does not have permission to delete note."
-      }
+        message: "User does not have permission to delete note.",
+      };
     }
 
     const noteRef = firestore.collection("notes").doc(noteId);
@@ -35,11 +36,11 @@ const deleteNoteService = async (noteId, memberId) => {
 
     return {
       code: StatusCodes.OK,
-      message: "Delete note successfully."
-    }
+      message: "Delete note successfully.",
+    };
   } catch (error) {
-    console.error(`Delete note error: ${error}`)
-    throw new Error("Delete note failed.")
+    console.error(`Delete note error: ${error}`);
+    throw new Error("Delete note failed.");
   }
 };
 

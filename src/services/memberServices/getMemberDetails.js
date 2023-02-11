@@ -5,7 +5,7 @@ const getMemberDetailsService = async (noteId, memberId) => {
   if (!(noteId && memberId)) {
     return {
       code: StatusCodes.BAD_REQUEST,
-      message: "Note ID and UID required.",
+      message: "Note ID and member ID required.",
     };
   }
   try {
