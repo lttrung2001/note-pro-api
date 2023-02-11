@@ -27,7 +27,7 @@ const addNote = async (req, res) => {
 const editNote = async (req, res) => {
     try {
         const note = new Note(req.query.id, req.body.title, req.body.content, Date.now())
-        let member = new Member(null, null, req.body.isPin, 'req.user.uid')
+        let member = new Member(null, null, req.body.isPin, req.user.uid)
         const files = req.files
         const deleteImageIds = req.body.deleteImageIds
         

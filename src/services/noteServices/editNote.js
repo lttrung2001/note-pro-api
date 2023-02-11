@@ -2,6 +2,7 @@ import { ref, deleteObject } from "firebase/storage";
 import { StatusCodes } from "http-status-codes";
 import { firestore } from "../../configs/firestoreConfig";
 import uploadImagesService from '../imageServices/uploadImages';
+import getMemberDetailsByUid from '../memberServices/getMemberDetailsByUid'
 
 const editNoteService = async (note, member, files, deleteImageIds) => {
   if (!note.id) {
@@ -10,7 +11,7 @@ const editNoteService = async (note, member, files, deleteImageIds) => {
       message: "Note ID required."
     }
   }
-  if (!(note.title || note.content || files || !deleteImageIds)) {
+  if (!(note.title || note.content || files)) {
     return {
       code: StatusCodes.BAD_REQUEST,
       message: "At least 1 input required."
@@ -18,12 +19,14 @@ const editNoteService = async (note, member, files, deleteImageIds) => {
   }
   try {
     // Call member service to get info of member
-    // member = await ...
+    const memberData = (await getMemberDetailsByUid(note.id, member.uid)).data
+    member.id = memberData.id
+    member.role = memberData.role
     const canEdit =
       member.role == "owner" || member.role == "editor" ? true : false;
     if (!canEdit) {
       return {
-        code: StatusCodes.BAD_REQUEST,
+        code: StatusCodes.FORBIDDEN,
         message: "User does not have permission to edit note."
       }
     }
