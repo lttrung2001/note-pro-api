@@ -86,6 +86,12 @@ const changePassword = async (req, res) => {
       });
     }
 
+    if (user.newPassword.length < 8 || user.newPassword.length > 32) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Length of newPassword must be between 8 and 32 characters",
+      });
+    }
+
     // Call service
     let data = await changePasswordService(user);
     // Return success message
@@ -119,12 +125,6 @@ const changeInfor = async (req, res) => {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs are required.",
         data: null,
-      });
-    }
-
-    if (user.password.length < 8 && user.password.length > 32) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: "Length of password must be between 8 and 32 characters",
       });
     }
 
