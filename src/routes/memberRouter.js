@@ -11,3 +11,5 @@ const memberRouter = () => {
 
   return router
 }
+
+module.exports = memberRouter

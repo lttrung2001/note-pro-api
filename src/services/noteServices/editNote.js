@@ -1,7 +1,6 @@
-import { deleteObject } from "firebase/storage";
+import { ref, deleteObject } from "firebase/storage";
 import { StatusCodes } from "http-status-codes";
 import { firestore } from "../../configs/firestoreConfig";
-import { ref, deleteObject } from 'firebase/storage'
 import uploadImagesService from '../imageServices/uploadImages';
 
 const editNoteService = async (note, member, files, deleteImageIds) => {

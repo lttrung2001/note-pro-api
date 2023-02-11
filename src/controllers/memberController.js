@@ -39,7 +39,7 @@ const editMember = async (req, res) => {
   }
 }
 
-const deleteMemeber = async (req, res) => {
+const deleteMember = async (req, res) => {
   try {
     const uid = req.user.uid
     const { noteId, memberId } = req.query
@@ -89,7 +89,7 @@ const getMemberDetails = async (req, res) => {
 module.exports = {
   addMember,
   editMember,
-  deleteMemeber,
+  deleteMember,
   getMembers,
   getMemberDetails,
 }
