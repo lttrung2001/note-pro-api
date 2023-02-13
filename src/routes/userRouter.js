@@ -13,6 +13,7 @@ const userRouter = () => {
   );
   router.post("/changeInfor", checkAccessToken, userController.changeInfor);
   router.post("/forgetPassword", userController.forgetPassword);
+  router.post("/resetPassword", userController.resetPassword);
 
   return router;
 };
