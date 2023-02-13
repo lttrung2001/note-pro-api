@@ -1,9 +1,4 @@
 import { StatusCodes } from "http-status-codes";
-import { firebaseAuth } from "../../configs/firebaseConfig";
-import {
-  signInWithCustomToken,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 import { adminAuth } from "../../configs/firestoreConfig";
 
 const changeInforService = async (userInput) => {
