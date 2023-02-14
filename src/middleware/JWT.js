@@ -13,12 +13,12 @@ export const checkAccessToken = async (req, res, next) => {
     });
   }
   let accessToken = authorization.split(" ")[1];
+  req.user = {};
   adminAuth
     .verifyIdToken(accessToken)
     .then((decodedToken) => {
-      console.log("decoded", decodedToken);
       req.user.uid = decodedToken.uid;
-      return next();
+      next();
     })
     .catch((error) => {
       console.log("error from access token", error.message);
