@@ -4,6 +4,7 @@ import { changePasswordService } from "../services/userServices/changePassword";
 import changeInforService from "../services/userServices/changeInfor";
 import { forgetPasswordService } from "../services/userServices/forgetPassword";
 import resetPasswordService from "../services/userServices/resetPassword";
+import detailUserService from "../services/userServices/detailUser";
 import { StatusCodes } from "http-status-codes";
 
 const registerUser = async (req, res) => {
@@ -207,6 +208,22 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const detailUser = async (req, res) => {
+  try {
+    let uid = req.user.uid;
+    let data = await detailUserService(uid);
+    return res.status(data.code).json({
+      message: data.message,
+      user: data.user,
+    });
+  } catch (error) {
+    console.log("error detail user", error.message);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -214,4 +231,5 @@ module.exports = {
   changeInfor,
   forgetPassword,
   resetPassword,
+  detailUser,
 };

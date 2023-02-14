@@ -12,6 +12,7 @@ const userRouter = () => {
     userController.changePassword
   );
   router.post("/change-infor", checkAccessToken, userController.changeInfor);
+  router.get("/detail-user", checkAccessToken, userController.detailUser);
   router.post("/forget-password", userController.forgetPassword);
   router.post("/reset-password", userController.resetPassword);
 
