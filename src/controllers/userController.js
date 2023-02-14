@@ -2,6 +2,7 @@ import registerService from "../services/userServices/register";
 import loginService from "../services/userServices/login";
 import { changePasswordService } from "../services/userServices/changePassword";
 import changeInforService from "../services/userServices/changeInfor";
+import { forgetPasswordService } from "../services/userServices/forgetPassword";
 import { StatusCodes } from "http-status-codes";
 
 const registerUser = async (req, res) => {
@@ -154,9 +155,37 @@ const changeInfor = async (req, res) => {
   }
 };
 
+const forgetPassword = async (req, res) => {
+  try {
+    let email = req.body.email;
+    if (!email) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "All inputs are required.",
+      });
+    }
+    let data = await forgetPasswordService(email);
+    if (data) {
+      console.log("data", data);
+      return res.status(data.code).json({
+        message: data.message,
+      });
+    } else {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "data is null",
+      });
+    }
+  } catch (error) {
+    console.log("error reset password", error.message);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   changePassword,
   changeInfor,
+  forgetPassword,
 };
