@@ -44,7 +44,7 @@ const loginUser = async (req, res) => {
     const user = req.body;
 
     // Validate that all inputs are provided
-    if (!(user.email && user.password && user.fullName)) {
+    if (!(user.email && user.password)) {
       res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs are required.",
         data: null,
