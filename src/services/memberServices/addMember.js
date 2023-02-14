@@ -51,6 +51,7 @@ const addMemberService = async (noteId, email, role, uid) => {
         role: memberSnapshot.get("role"),
         fullName: userRecord.displayName,
         email: userRecord.email,
+        phoneNumber: userRecord.phoneNumber
       },
     };
   } catch (error) {

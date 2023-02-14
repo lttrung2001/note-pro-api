@@ -28,6 +28,7 @@ const getMemberDetailsByUidService = async (noteId, memberUid) => {
         role: memberSnapshot.get("role"),
         fullName: userRecord.displayName,
         email: userRecord.email,
+        phoneNumber: userRecord.phoneNumber
       },
     };
   } catch (error) {

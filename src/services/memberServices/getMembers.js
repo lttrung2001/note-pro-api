@@ -29,6 +29,7 @@ const getMembersService = async (noteId, pageIndex, limit) => {
         role: document.get("role"),
         fullName: userRecord.displayName,
         email: userRecord.email,
+        phoneNumber: userRecord.phoneNumber
       };
     });
     const members = await Promise.all(promises);
