@@ -3,6 +3,7 @@ import loginService from "../services/userServices/login";
 import { changePasswordService } from "../services/userServices/changePassword";
 import changeInforService from "../services/userServices/changeInfor";
 import { forgetPasswordService } from "../services/userServices/forgetPassword";
+import resetPasswordService from "../services/userServices/resetPassword";
 import { StatusCodes } from "http-status-codes";
 
 const registerUser = async (req, res) => {
@@ -164,7 +165,7 @@ const forgetPassword = async (req, res) => {
       });
     }
     let data = await forgetPasswordService(email);
-    if (data) {
+    if (data && data.code === StatusCodes.OK) {
       console.log("data", data);
       return res.status(data.code).json({
         message: data.message,
@@ -182,10 +183,35 @@ const forgetPassword = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  try {
+    let { codeVerify, newPassword } = req.body;
+    if (!codeVerify && !newPassword) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        message: "All inputs are required",
+      });
+    } else if (newPassword.length < 8 || newPassword.length > 32) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        message: "Length password must be between 8 and 32 characters",
+      });
+    }
+    let data = await resetPasswordService(codeVerify, newPassword);
+    return res.status(data.code).json({
+      message: data.message,
+    });
+  } catch (error) {
+    console.log("error reset password", error.message);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   changePassword,
   changeInfor,
   forgetPassword,
+  resetPassword,
 };
