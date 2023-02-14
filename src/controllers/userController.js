@@ -119,14 +119,17 @@ const changeInfor = async (req, res) => {
   try {
     // Extract user information from the request user
     const user = req.body;
+    user.uid = req.user.uid;
 
     // Validate that all inputs are provided
-    if (!(user.displayName && user.email && user.password)) {
+    if (!(user.fullName && user.phoneNumber)) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs are required.",
         data: null,
       });
     }
+
+    user.phoneNumber = "+84" + user.phoneNumber.split("0")[1];
 
     // Call service
     let data = await changeInforService(user);

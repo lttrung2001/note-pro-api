@@ -1,7 +1,28 @@
 import { StatusCodes } from "http-status-codes";
 import { firebaseAuth } from "../../configs/firebaseConfig";
-import { signInWithCustomToken, updatePassword } from "firebase/auth";
+import {
+  signInWithCustomToken,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { adminAuth } from "../../configs/firestoreConfig";
 
-const changeInforService = (userInput) => {};
+const changeInforService = async (userInput) => {
+  try {
+    let newUser = await adminAuth.updateUser(userInput.uid, userInput);
+    if (newUser) {
+      return {
+        message: "User updated successfully",
+        code: StatusCodes.OK,
+      };
+    } else {
+      return {
+        message: "User updated failed",
+        code: StatusCodes.BAD_GATEWAY,
+      };
+    }
+  } catch (error) {
+    console.log("error change infor", error.message);
+  }
+};
 
 module.exports = changeInforService;
