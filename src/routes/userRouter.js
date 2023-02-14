@@ -7,13 +7,13 @@ const userRouter = () => {
   router.post("/register", userController.registerUser);
   router.post("/login", userController.loginUser);
   router.post(
-    "/changePassword",
+    "/change-password",
     checkAccessToken,
     userController.changePassword
   );
-  router.post("/changeInfor", checkAccessToken, userController.changeInfor);
-  router.post("/forgetPassword", userController.forgetPassword);
-  router.post("/resetPassword", userController.resetPassword);
+  router.post("/change-infor", checkAccessToken, userController.changeInfor);
+  router.post("/forget-password", userController.forgetPassword);
+  router.post("/reset-password", userController.resetPassword);
 
   return router;
 };
