@@ -43,7 +43,7 @@ const loginService = async (userInput) => {
     }
 
     // Responding with a 200 OK status code and the refreshToken if the login is successful
-    let refreshToken = await user.getIdToken();
+    let refreshToken = await user.refreshToken;
     return {
       message: "Login successfully.",
       refreshToken,
