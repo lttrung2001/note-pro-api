@@ -14,6 +14,6 @@ import middlewares from '../middlewares'
   router.get("/get-user-details", middlewares.verifyAccessToken, userController.getUserDetails);
   router.post("/forget-password", userController.forgetPassword);
   router.post("/reset-password", userController.resetPassword);
-  router.get("/get-access-token", middlewares.verifyRefreshToken, userController.getAccessToken);
+  router.get("/get-access-token", userController.getAccessToken);
 
 export default router
