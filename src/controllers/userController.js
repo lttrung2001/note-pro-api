@@ -219,11 +219,18 @@ const getUserDetails = async (req, res) => {
 };
 
 const getAccessToken = async (req, res) => {
-  const result = await userServices.getAccessToken(req, res); 
-  res.status(result.code).json({
-    message: result.message,
-    data: result.data,
-  })
+  try {
+    const result = await userServices.getAccessToken(req, res); 
+    res.status(result.code).json({
+      message: result.message,
+      data: result.data,
+    })
+  } catch (error) {
+    console.log(`Get access token error: ${error}`)
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
 }
 
 export default {
