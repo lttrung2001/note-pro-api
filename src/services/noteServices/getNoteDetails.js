@@ -35,4 +35,4 @@ const getNoteDetailsService = async (noteId, uid) => {
   }
 };
 
-module.exports = getNoteDetailsService
+export default getNoteDetailsService

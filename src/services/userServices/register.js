@@ -28,4 +28,4 @@ const registerService = async (newUser) => {
 };
 
 // Export the registerService function
-module.exports = registerService;
+export default registerService;

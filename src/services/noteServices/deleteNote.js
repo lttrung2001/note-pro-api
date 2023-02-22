@@ -44,4 +44,4 @@ const deleteNoteService = async (noteId, memberId) => {
   }
 };
 
-module.exports = deleteNoteService;
+export default deleteNoteService;

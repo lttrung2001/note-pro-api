@@ -60,4 +60,4 @@ const addMemberService = async (noteId, email, role, uid) => {
   }
 };
 
-module.exports = addMemberService;
+export default addMemberService;

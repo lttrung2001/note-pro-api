@@ -58,4 +58,4 @@ const editMemberService = async (noteId, memberId, role, uid) => {
   }
 };
 
-module.exports = editMemberService
+export default editMemberService

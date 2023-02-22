@@ -1,7 +1,7 @@
 import { adminAuth } from "../configs/firestoreConfig";
 import { StatusCodes } from "http-status-codes";
 
-export const checkAccessToken = async (req, res, next) => {
+const verifyAccessToken = (req, res, next) => {
   let authorization = req.headers.authorization;
   if (
     !authorization ||
@@ -27,3 +27,5 @@ export const checkAccessToken = async (req, res, next) => {
       });
     });
 };
+
+export default verifyAccessToken

@@ -43,7 +43,7 @@ const loginService = async (userInput) => {
     }
 
     // Responding with a 200 OK status code and the refreshToken if the login is successful
-    let refreshToken = await user.refreshToken;
+    let refreshToken = user.refreshToken;
     return {
       message: "Login successfully.",
       refreshToken,
@@ -63,4 +63,4 @@ const loginService = async (userInput) => {
 };
 
 // Exporting the loginService function
-module.exports = loginService;
+export default loginService;

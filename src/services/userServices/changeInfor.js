@@ -20,4 +20,4 @@ const changeInforService = async (userInput) => {
   }
 };
 
-module.exports = changeInforService;
+export default changeInforService;

@@ -1,26 +1,20 @@
-import registerService from "../services/userServices/register";
-import loginService from "../services/userServices/login";
-import { changePasswordService } from "../services/userServices/changePassword";
-import changeInforService from "../services/userServices/changeInfor";
-import { forgetPasswordService } from "../services/userServices/forgetPassword";
-import resetPasswordService from "../services/userServices/resetPassword";
-import detailUserService from "../services/userServices/detailUser";
 import { StatusCodes } from "http-status-codes";
+import userServices from '../services/userServices'
 
-const registerUser = async (req, res) => {
+const register = async (req, res) => {
   try {
     // Extract user information from the request body
     const newUser = req.body;
 
     // Validate that all inputs are provided
-    if (!(newUser.email && newUser.password && newUser.fullName)) {
+    if (!(newUser.email && newUser.password && newUser.fullName && newUser.phoneNumber)) {
       res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs are required.",
         data: null,
       });
     }
     // Call service
-    await registerService(newUser);
+    await userServices.register(newUser);
     // Return success message
     res.status(StatusCodes.OK).json({
       message: "Create account successfully.",
@@ -38,7 +32,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+const login = async (req, res) => {
   try {
     // Extract user information from the request body
     const user = req.body;
@@ -51,7 +45,7 @@ const loginUser = async (req, res) => {
       });
     }
     // Call service
-    let data = await loginService(user);
+    let data = await userServices.login(user);
     // Return success message
 
     if (data && data.code === StatusCodes.OK) {
@@ -96,7 +90,7 @@ const changePassword = async (req, res) => {
     }
 
     // Call service
-    let data = await changePasswordService(user);
+    let data = await userServices.changePassword(user);
     // Return success message
     if (data) {
       return res.status(data.code).json({
@@ -135,7 +129,7 @@ const changeInfor = async (req, res) => {
     user.phoneNumber = "+84" + user.phoneNumber.split("0")[1];
 
     // Call service
-    let data = await changeInforService(user);
+    let data = await userServices.changeInfor(user);
     // Return success message
     if (data) {
       return res.status(data.code).json({
@@ -165,7 +159,7 @@ const forgetPassword = async (req, res) => {
         message: "All inputs are required.",
       });
     }
-    let data = await forgetPasswordService(email);
+    let data = await userServices.forgetPassword(email);
     if (data && data.code === StatusCodes.OK) {
       console.log("data", data);
       return res.status(data.code).json({
@@ -196,7 +190,7 @@ const resetPassword = async (req, res) => {
         message: "Length password must be between 8 and 32 characters",
       });
     }
-    let data = await resetPasswordService(codeVerify, newPassword);
+    let data = await userServices.resetPassword(codeVerify, newPassword);
     return res.status(data.code).json({
       message: data.message,
     });
@@ -208,7 +202,7 @@ const resetPassword = async (req, res) => {
   }
 };
 
-const detailUser = async (req, res) => {
+const getUserDetails = async (req, res) => {
   try {
     let uid = req.user.uid;
     let data = await detailUserService(uid);
@@ -224,12 +218,12 @@ const detailUser = async (req, res) => {
   }
 };
 
-module.exports = {
-  registerUser,
-  loginUser,
+export default {
+  register,
+  login,
   changePassword,
   changeInfor,
   forgetPassword,
   resetPassword,
-  detailUser,
+  getUserDetails,
 };

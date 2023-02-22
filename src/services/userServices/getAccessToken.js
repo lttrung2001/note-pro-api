@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import request from 'request'
 
-const fetchAccessTokenService = async (req, res) => {
+const getAccessTokenService = async (req, res) => {
     const authorization = req.headers.authorization
         const token = authorization.split(' ')[1]
         if (!token) {
@@ -38,4 +38,4 @@ const fetchAccessTokenService = async (req, res) => {
         })
 }
 
-module.exports = fetchAccessTokenService
+export default getAccessTokenService

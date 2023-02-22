@@ -82,4 +82,4 @@ const editNoteService = async (note, member, files, deleteImageIds) => {
   }
 };
 
-module.exports = editNoteService;
+export default editNoteService;

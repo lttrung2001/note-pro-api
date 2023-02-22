@@ -38,4 +38,4 @@ const getNotesService = async (uid) => {
   }
 };
 
-module.exports = getNotesService;
+export default getNotesService

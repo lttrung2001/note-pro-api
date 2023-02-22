@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { adminAuth } from "../../configs/firestoreConfig";
 
-const detailUserService = async (uid) => {
+const getUserDetailsService = async (uid) => {
   try {
     let user = await adminAuth.getUser(uid);
     if (!user) {
@@ -32,4 +32,4 @@ const detailUserService = async (uid) => {
   }
 };
 
-module.exports = detailUserService;
+export default getUserDetailsService

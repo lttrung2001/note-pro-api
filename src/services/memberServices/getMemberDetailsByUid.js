@@ -37,4 +37,4 @@ const getMemberDetailsByUidService = async (noteId, memberUid) => {
   }
 };
 
-module.exports = getMemberDetailsByUidService
+export default getMemberDetailsByUidService

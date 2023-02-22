@@ -1,5 +1,4 @@
 import { firebaseAuth } from "../../configs/firebaseConfig";
-// import { adminAuth } from "../../configs/firestoreConfig";
 import { confirmPasswordReset } from "firebase/auth";
 import { StatusCodes } from "http-status-codes";
 
@@ -19,4 +18,4 @@ const resetPasswordService = async (codeVerifyInput, newPassword) => {
   }
 };
 
-module.exports = resetPasswordService;
+export default resetPasswordService;
