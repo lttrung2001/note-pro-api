@@ -38,4 +38,4 @@ const forgetPasswordService = async (emailInput) => {
   }
 };
 
-module.exports = { forgetPasswordService };
+export default forgetPasswordService

@@ -28,4 +28,4 @@ const getMemberDetailsService = async (noteId, memberId) => {
   }
 };
 
-module.exports = getMemberDetailsService
+export default getMemberDetailsService

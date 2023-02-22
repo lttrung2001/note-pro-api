@@ -29,6 +29,4 @@ const changePasswordService = async (userInput) => {
   }
 };
 
-module.exports = {
-  changePasswordService,
-};
+export default changePasswordService

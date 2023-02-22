@@ -48,4 +48,4 @@ const getMembersService = async (noteId, pageIndex, limit) => {
   }
 };
 
-module.exports = getMembersService
+export default getMembersService

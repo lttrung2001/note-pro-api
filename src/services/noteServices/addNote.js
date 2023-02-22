@@ -55,4 +55,4 @@ const addNoteService = async (note, member, files) => {
   }
 };
 
-module.exports = addNoteService;
+export default addNoteService;
