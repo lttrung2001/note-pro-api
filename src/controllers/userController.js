@@ -218,6 +218,14 @@ const getUserDetails = async (req, res) => {
   }
 };
 
+const getAccessToken = async (req, res) => {
+  const result = await userServices.getAccessToken(req, res); 
+  res.status(result.code).json({
+    message: result.message,
+    data: result.data,
+  })
+}
+
 export default {
   register,
   login,
@@ -226,4 +234,5 @@ export default {
   forgetPassword,
   resetPassword,
   getUserDetails,
+  getAccessToken,
 };
