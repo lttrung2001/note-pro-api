@@ -221,14 +221,14 @@ const getUserDetails = async (req, res) => {
 const getAccessToken = async (req, res) => {
   try {
     const result = await userServices.getAccessToken(req, res); 
-    res.status(result.code).json({
-      message: result.message,
-      data: result.data,
+    res.status(StatusCodes.OK).json({
+      message: "Get access token successfully.",
+      data: result.access_token,
     })
   } catch (error) {
     console.log(`Get access token error: ${error}`)
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: error.message,
+      message: error,
     });
   }
 }
