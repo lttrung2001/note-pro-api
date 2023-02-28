@@ -1,5 +1,4 @@
 import { StatusCodes } from "http-status-codes";
-import { signInWithCustomToken } from "firebase/auth";
 import request from "request";
 
 const getAccessTokenService = async (req, res) => {

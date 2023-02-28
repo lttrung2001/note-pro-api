@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import userServices from '../services/userServices'
+import userServices from "../services/userServices";
 
 const register = async (req, res) => {
   try {
@@ -7,7 +7,14 @@ const register = async (req, res) => {
     const newUser = req.body;
 
     // Validate that all inputs are provided
-    if (!(newUser.email && newUser.password && newUser.fullName && newUser.phoneNumber)) {
+    if (
+      !(
+        newUser.email &&
+        newUser.password &&
+        newUser.fullName &&
+        newUser.phoneNumber
+      )
+    ) {
       res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs are required.",
         data: null,
@@ -220,18 +227,19 @@ const getUserDetails = async (req, res) => {
 
 const getAccessToken = async (req, res) => {
   try {
-    const result = await userServices.getAccessToken(req, res); 
+    const result = await userServices.getAccessToken(req, res);
+    console.log(result);
     res.status(StatusCodes.OK).json({
       message: "Get access token successfully.",
       data: result.access_token,
-    })
+    });
   } catch (error) {
-    console.log(`Get access token error: ${error}`)
+    console.log(`Get access token error: ${error}`);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: error,
     });
   }
-}
+};
 
 export default {
   register,
