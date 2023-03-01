@@ -22,6 +22,6 @@ router.get(
 );
 router.post("/forget-password", userController.forgetPassword);
 router.post("/reset-password", userController.resetPassword);
-router.get("/get-access-token", userController.getAccessToken);
+router.post("/get-access-token", userController.getAccessToken);
 
 export default router;
