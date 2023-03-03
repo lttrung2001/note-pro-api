@@ -54,7 +54,9 @@ const deleteMember = async (req, res) => {
 const getMembers = async (req, res) => {
   try {
     const { noteId, pageIndex, limit } = req.query
-    const getMembersResult = await memberServices.getMembers(noteId, pageIndex, limit);
+    
+    console.log(pageIndex, limit);
+    const getMembersResult = await memberServices.getMembers(noteId, Number(pageIndex), Number(limit));
     res.status(getMembersResult.code).json({
       message: getMembersResult.message,
       data: getMembersResult.data
