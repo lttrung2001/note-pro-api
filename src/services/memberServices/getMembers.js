@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { adminAuth, firestore } from "../../configs/firestoreConfig";
 const getMembersService = async (noteId, pageIndex, limit) => {
-  if (!(noteId && pageIndex && limit)) {
+  if (!(noteId && pageIndex >= 0 && limit > 0)) {
     return {
       code: StatusCodes.BAD_REQUEST,
       message: "Note ID, Page Index and Limit required.",
