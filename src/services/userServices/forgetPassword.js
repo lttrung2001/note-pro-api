@@ -33,9 +33,9 @@ const forgetPasswordService = async (emailInput) => {
       };
     }
   } catch (error) {
-    console.log("error reset password service", error.message);
+    console.log("error forget password service", error.message);
     return { message: error.message, code: StatusCodes.INTERNAL_SERVER_ERROR };
   }
 };
 
-export default forgetPasswordService
+export default forgetPasswordService;

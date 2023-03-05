@@ -24,7 +24,7 @@ const registerService = async (newUser) => {
   });
 
   // Send email verification to the new user
-  sendEmailVerification(user);
+  await sendEmailVerification(user);
 };
 
 // Export the registerService function
