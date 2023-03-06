@@ -11,10 +11,10 @@ const uploadImages = async (uid, noteId, images) => {
   }
   try {
     const uploadPromises = await upload(uid, noteId, images);
-
-    const getImageUrlPromises = (await Promise.all(uploadPromises)).map(
-      convertResultToImage(uploadResult)
-    );
+    const results = await Promise.all(uploadPromises);
+    const getImageUrlPromises = results.map(async (result) => {
+      return await convertResultToImage(uid, result)
+    });
 
     const data = await Promise.all(getImageUrlPromises);
     return {
@@ -44,12 +44,12 @@ const upload = async (uid, noteId, images) => {
   return promises;
 };
 
-const convertResultToImage = async (uploadResult) => {
+const convertResultToImage = async (uid, uploadResult) => {
   return new Image(
     null,
     uploadResult.ref.name,
     await getDownloadURL(uploadResult.ref),
-    Date.parse(uploadResult.metadata.timeCreated),
+    Date.parse(uploadResult.metadata.updated),
     uid
   );
 };
