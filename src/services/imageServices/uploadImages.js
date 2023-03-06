@@ -6,7 +6,7 @@ const uploadImages = async (uid, noteId, images) => {
   if (!(uid && noteId && images)) {
     return {
       code: StatusCodes.BAD_REQUEST,
-      message: "At least 1 image required.",
+      message: "All input required.",
     };
   }
   try {
