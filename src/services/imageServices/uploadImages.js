@@ -1,48 +1,57 @@
-import { storage } from "../../configs/firestoreConfig";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { firebaseApp } from "../../configs/firebaseConfig";
+import { getDownloadURL, ref, uploadBytes, getStorage } from "firebase/storage";
 import { Image } from "../../models/models";
 import { StatusCodes } from "http-status-codes";
 const uploadImages = async (uid, noteId, images) => {
   if (!(uid && noteId && images)) {
     return {
       code: StatusCodes.BAD_REQUEST,
-      message: "At least 1 image required."
-    }
+      message: "At least 1 image required.",
+    };
   }
   try {
-    const uploadImagesPromises = [];
-    const imageUrl = null;
-    for (const image of [].concat(images)) {
-      imageUrl = `images/${uid}/${noteId}/${Date.now().toString()}-${
-        image.name
-      }`;
-      uploadImagesPromises.push(
-        uploadBytes(ref(storage, imageUrl), image.data, {
-          contentType: "image",
-        })
-      );
-    }
-    const imagesPromises = (await Promise.all(uploadImagesPromises)).map(
-      async function (uploadResult) {
-        return new Image(
-          null,
-          uploadResult.ref.name,
-          await getDownloadURL(uploadResult.ref),
-          Date.parse(uploadResult.metadata.timeCreated),
-          uid
-        );
-      }
-    );
-    const data = await Promise.all(imagesPromises);
+    const uploadPromises = await upload(uid, noteId, images);
+    const results = await Promise.all(uploadPromises);
+    const getImageUrlPromises = results.map(async (result) => {
+      return await convertResultToImage(uid, result)
+    });
+
+    const data = await Promise.all(getImageUrlPromises);
     return {
       code: StatusCodes.OK,
       message: "Upload images successfully.",
-      data: data
-    }
+      data: data,
+    };
   } catch (error) {
-    console.error(`Upload images error: ${error}`)
+    console.error(`Upload images error: ${error}`);
     throw new Error("Upload images failed.");
   }
+};
+
+const upload = async (uid, noteId, images) => {
+  const storage = getStorage(firebaseApp);
+  const promises = [];
+  images.forEach((image) => {
+    const imageUrl = `images/${uid}/${noteId}/${Date.now().toString()}-${
+      image.name
+    }`;
+    promises.push(
+      uploadBytes(ref(storage, imageUrl), image.data, {
+        contentType: "image",
+      })
+    );
+  });
+  return promises;
+};
+
+const convertResultToImage = async (uid, uploadResult) => {
+  return new Image(
+    null,
+    uploadResult.ref.name,
+    await getDownloadURL(uploadResult.ref),
+    Date.parse(uploadResult.metadata.updated),
+    uid
+  );
 };
 
 module.exports = uploadImages;
