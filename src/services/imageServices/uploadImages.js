@@ -1,5 +1,5 @@
-import { storage } from "../../configs/firestoreConfig";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { firebaseApp } from '../../configs/firebaseConfig';
+import { getDownloadURL, ref, uploadBytes, getStorage } from "firebase/storage";
 import { Image } from "../../models/models";
 import { StatusCodes } from "http-status-codes";
 const uploadImages = async (uid, noteId, images) => {
@@ -10,20 +10,20 @@ const uploadImages = async (uid, noteId, images) => {
     }
   }
   try {
-    const uploadImagesPromises = [];
-    const imageUrl = null;
-    for (const image of [].concat(images)) {
-      imageUrl = `images/${uid}/${noteId}/${Date.now().toString()}-${
+    const storage = getStorage(firebaseApp);
+    const uploadImagePromises = [];
+    images.forEach((image) => {
+      const imageUrl = `images/${uid}/${noteId}/${Date.now().toString()}-${
         image.name
       }`;
-      uploadImagesPromises.push(
+      uploadImagePromises.push(
         uploadBytes(ref(storage, imageUrl), image.data, {
           contentType: "image",
         })
       );
-    }
-    const imagesPromises = (await Promise.all(uploadImagesPromises)).map(
-      async function (uploadResult) {
+    })
+    const getImageUrlPromises = (await Promise.all(uploadImagePromises)).map(
+      async (uploadResult) => {
         return new Image(
           null,
           uploadResult.ref.name,
@@ -33,14 +33,14 @@ const uploadImages = async (uid, noteId, images) => {
         );
       }
     );
-    const data = await Promise.all(imagesPromises);
+    const data = await Promise.all(getImageUrlPromises);
     return {
       code: StatusCodes.OK,
       message: "Upload images successfully.",
       data: data
     }
   } catch (error) {
-    console.error(`Upload images error: ${error}`)
+    console.error(`Upload images error: ${error.stack}`)
     throw new Error("Upload images failed.");
   }
 };
