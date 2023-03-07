@@ -1,17 +1,17 @@
 import { firestore, storage } from "../../configs/firestoreConfig";
 import { listAll, deleteObject, ref } from "firebase/storage";
 import { StatusCodes } from "http-status-codes";
-import getMemberDetails from "../memberServices/getMemberDetails";
-const deleteNoteService = async (noteId, memberId) => {
-  if (!(noteId && memberId)) {
+import getMemberDetailsByUid from "../memberServices/getMemberDetailsByUid";
+const deleteNoteService = async (noteId, uid) => {
+  if (!(noteId && uid)) {
     return {
       code: StatusCodes.BAD_REQUEST,
-      message: "Note ID and member ID required to delete note.",
+      message: "Note ID and UID required to delete note.",
     };
   }
   try {
     // Call member service to get info of member
-    const member = (await getMemberDetails(noteId, memberId)).data
+    const member = (await getMemberDetailsByUid(noteId, uid)).data;
     const canDelete = member.role == "owner" ? true : false;
     if (!canDelete) {
       return {
@@ -25,7 +25,7 @@ const deleteNoteService = async (noteId, memberId) => {
 
     const numberImages = (await noteRef.collection("images").get()).docs.length;
     if (numberImages > 0) {
-      const listRef = ref(storage, `images/${memberId}/${noteId}`);
+      const listRef = ref(storage, `images/${uid}/${noteId}`);
       const result = await listAll(listRef);
       const deleteImagesPromises = [];
       result.items.forEach((itemRef) => {
