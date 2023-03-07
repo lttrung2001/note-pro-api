@@ -41,8 +41,8 @@ const editNote = async (req, res) => {
 const deleteNote = async (req, res) => {
     try {
         const noteId = req.query.id
-        const memberId = req.user.uid
-        const deleteNoteServiceResult = await noteServices.deleteNote(noteId, memberId)
+        const uid = req.user.uid
+        const deleteNoteServiceResult = await noteServices.deleteNote(noteId, uid)
         res.status(deleteNoteServiceResult.code).json({
             message: deleteNoteServiceResult.message,
             data: deleteNoteServiceResult.data
