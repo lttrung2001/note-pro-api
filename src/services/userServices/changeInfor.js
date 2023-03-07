@@ -7,6 +7,12 @@ const changeInforService = async (userInput) => {
     if (newUser) {
       return {
         message: "User updated successfully",
+        user: {
+          uid: newUser.uid,
+          email: newUser.email,
+          fullName: newUser.displayName,
+          phoneNumber: newUser.phoneNumber,
+        },
         code: StatusCodes.OK,
       };
     } else {

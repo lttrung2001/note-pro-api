@@ -15,7 +15,7 @@ const register = async (req, res) => {
         newUser.phoneNumber
       )
     ) {
-      res.status(StatusCodes.BAD_REQUEST).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs are required.",
         data: null,
       });
@@ -23,8 +23,9 @@ const register = async (req, res) => {
     // Call service
     await userServices.register(newUser);
     // Return success message
-    res.status(StatusCodes.OK).json({
-      message: "Create account successfully.",
+    return res.status(StatusCodes.OK).json({
+      message:
+        "Now you have only one step. Let's verify your account by email, please",
       data: null,
     });
   } catch (error) {
@@ -32,7 +33,7 @@ const register = async (req, res) => {
     console.error("Error creating new user:", error.message);
 
     // Return error message if email already exists
-    res.status(StatusCodes.CONFLICT).json({
+    return res.status(StatusCodes.CONFLICT).json({
       message: "Email already exists.",
       data: null,
     });
@@ -46,14 +47,13 @@ const login = async (req, res) => {
 
     // Validate that all inputs are provided
     if (!(user.email && user.password)) {
-      res.status(StatusCodes.BAD_REQUEST).json({
+      return res.status(StatusCodes.OK).json({
         message: "All inputs are required.",
         data: null,
       });
     }
     // Call service
     let data = await userServices.login(user);
-    // Return success message
 
     if (data && data.code === StatusCodes.OK) {
       // Return success message
@@ -133,6 +133,7 @@ const changeInfor = async (req, res) => {
       });
     }
 
+    user.displayName = user.fullName;
     user.phoneNumber = "+84" + user.phoneNumber.split("0")[1];
 
     // Call service
@@ -141,6 +142,7 @@ const changeInfor = async (req, res) => {
     if (data) {
       return res.status(data.code).json({
         message: data.message,
+        user: data.user,
       });
     }
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -148,11 +150,11 @@ const changeInfor = async (req, res) => {
     });
   } catch (error) {
     // Log error message
-    console.error("Error changePassword:", error.message);
+    console.error("Error change-infor:", error.message);
 
     // Return error message
     res.status(StatusCodes.BAD_REQUEST).json({
-      message: "Error from changePassword.",
+      message: "Error from change-infor.",
       data: null,
     });
   }
@@ -167,18 +169,14 @@ const forgetPassword = async (req, res) => {
       });
     }
     let data = await userServices.forgetPassword(email);
-    if (data && data.code === StatusCodes.OK) {
+    if (data) {
       console.log("data", data);
       return res.status(data.code).json({
         message: data.message,
       });
-    } else {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: "data is null",
-      });
     }
   } catch (error) {
-    console.log("error reset password", error.message);
+    console.log("error forget password", error.message);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: error.message,
     });
@@ -212,7 +210,7 @@ const resetPassword = async (req, res) => {
 const getUserDetails = async (req, res) => {
   try {
     let uid = req.user.uid;
-    let data = await detailUserService(uid);
+    let data = await userServices.getUserDetails(uid);
     return res.status(data.code).json({
       message: data.message,
       user: data.user,
@@ -228,7 +226,6 @@ const getUserDetails = async (req, res) => {
 const getAccessToken = async (req, res) => {
   try {
     const result = await userServices.getAccessToken(req, res);
-    console.log(result);
     res.status(StatusCodes.OK).json({
       message: "Get access token successfully.",
       data: result.access_token,
