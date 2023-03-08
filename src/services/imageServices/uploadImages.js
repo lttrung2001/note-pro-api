@@ -1,14 +1,7 @@
 import { firebaseApp } from "../../configs/firebaseConfig";
 import { getDownloadURL, ref, uploadBytes, getStorage } from "firebase/storage";
 import { Image } from "../../models/models";
-import { StatusCodes } from "http-status-codes";
 const uploadImages = async (uid, noteId, images) => {
-  if (!(uid && noteId && images)) {
-    return {
-      code: StatusCodes.BAD_REQUEST,
-      message: "All input required.",
-    };
-  }
   try {
     const uploadPromises = await upload(uid, noteId, images);
     const results = await Promise.all(uploadPromises);
@@ -17,11 +10,7 @@ const uploadImages = async (uid, noteId, images) => {
     });
 
     const data = await Promise.all(getImageUrlPromises);
-    return {
-      code: StatusCodes.OK,
-      message: "Upload images successfully.",
-      data: data,
-    };
+    return data;
   } catch (error) {
     console.error(`Upload images error: ${error}`);
     throw new Error("Upload images failed.");
