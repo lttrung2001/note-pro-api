@@ -12,7 +12,7 @@ const editNoteService = async (note, member, files, deleteImageIds) => {
     // Update note data
     batch.update(noteRef, note.data());
     // Update member data (isPin)
-    batch.update(memberRef, member.data());
+    batch.update(memberRef, { role: member.role });
     // Delete images
     if (deleteImageIds) {
       deleteImageIds.forEach(async (id) => {
