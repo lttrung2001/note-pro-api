@@ -111,12 +111,12 @@ const getMembers = async (req, res) => {
         message: "Inputs invalid.",
       });
     }
-    const getMembersResult = await memberServices.getMembers(
+    const result = await memberServices.getMembers(
       noteId,
       Number(pageIndex),
       Number(limit)
     );
-    const promises = getMembersResult.data.map(async (member) => {
+    const promises = result.data.map(async (member) => {
       const user = await adminAuth.getUser(member.uid);
       return {
         id: member.id,
@@ -126,9 +126,10 @@ const getMembers = async (req, res) => {
         role: member.role,
       };
     });
+    result.data = await Promise.all(promises);
     return res.status(StatusCodes.OK).json({
       message: "Get members successfully.",
-      data: await Promise.all(promises),
+      data: result,
     });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
