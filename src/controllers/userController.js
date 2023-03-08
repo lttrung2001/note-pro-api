@@ -213,7 +213,7 @@ const getUserDetails = async (req, res) => {
     let data = await userServices.getUserDetails(uid);
     return res.status(data.code).json({
       message: data.message,
-      user: data.user,
+      data: data.user,
     });
   } catch (error) {
     console.log("error detail user", error.message);
