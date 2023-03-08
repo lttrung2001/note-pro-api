@@ -1,12 +1,13 @@
-import { firestore, storage } from "../../configs/firestoreConfig";
-import { listAll, deleteObject, ref } from "firebase/storage";
+import { firestore } from "../../configs/firestoreConfig";
+import { getStorage, listAll, deleteObject, ref } from "firebase/storage";
+import { firebaseApp } from "../../configs/firebaseConfig";
 const deleteNoteService = async (noteId, uid) => {
   try {
     const noteRef = firestore.collection("notes").doc(noteId);
-    await firestore.recursiveDelete(noteRef);
-
     const numberImages = (await noteRef.collection("images").get()).docs.length;
+    await firestore.recursiveDelete(noteRef);
     if (numberImages > 0) {
+      const storage = getStorage(firebaseApp);
       const listRef = ref(storage, `images/${uid}/${noteId}`);
       const result = await listAll(listRef);
       const deleteImagesPromises = [];

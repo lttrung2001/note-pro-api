@@ -20,7 +20,7 @@ const uploadImages = async (uid, noteId, images) => {
 const upload = async (uid, noteId, images) => {
   const storage = getStorage(firebaseApp);
   const promises = [];
-  images.forEach((image) => {
+  [].concat(images).forEach((image) => {
     const imageUrl = `images/${uid}/${noteId}/${Date.now().toString()}-${
       image.name
     }`;
