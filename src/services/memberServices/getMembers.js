@@ -1,12 +1,5 @@
-import { StatusCodes } from "http-status-codes";
-import { adminAuth, firestore } from "../../configs/firestoreConfig";
+import { firestore } from "../../configs/firestoreConfig";
 const getMembersService = async (noteId, pageIndex, limit) => {
-  if (!(noteId && pageIndex >= 0 && limit > 0)) {
-    return {
-      code: StatusCodes.BAD_REQUEST,
-      message: "Note ID, Page Index and Limit required.",
-    };
-  }
   try {
     const membersCollectionRef = firestore
       .collection("notes")
@@ -16,31 +9,21 @@ const getMembersService = async (noteId, pageIndex, limit) => {
       Math.ceil((await membersCollectionRef.get()).size / limit) - 1;
     const hasPreviousPage = pageIndex > 0;
     const hasNextPage = pageIndex < lastPageIndex;
-    const promises = (
+    const members = (
       await membersCollectionRef
         .offset(pageIndex * limit)
         .limit(limit)
         .get()
-    ).docs.map(async (document) => {
-      const uid = document.get("uid");
-      const userRecord = await adminAuth.getUser(uid);
+    ).docs.map((document) => {
       return {
         id: document.id,
-        role: document.get("role"),
-        fullName: userRecord.displayName,
-        email: userRecord.email,
-        phoneNumber: userRecord.phoneNumber
+        ...document.data(),
       };
     });
-    const members = await Promise.all(promises);
     return {
-      code: StatusCodes.OK,
-      message: "Get members successfully.",
-      data: {
-        hasPreviousPage: hasPreviousPage,
-        hasNextPage: hasNextPage,
-        data: members,
-      },
+      hasPreviousPage: hasPreviousPage,
+      hasNextPage: hasNextPage,
+      data: members,
     };
   } catch (error) {
     console.error(`Get members error: ${error}`);
@@ -48,4 +31,4 @@ const getMembersService = async (noteId, pageIndex, limit) => {
   }
 };
 
-export default getMembersService
+export default getMembersService;
