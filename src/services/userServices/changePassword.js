@@ -23,7 +23,6 @@ const changePasswordService = async (userInput) => {
     console.log("error change password", error.message);
     return {
       message: error.message,
-      users: null,
       code: StatusCodes.INTERNAL_SERVER_ERROR,
     };
   }

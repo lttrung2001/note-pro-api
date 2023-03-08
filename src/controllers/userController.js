@@ -47,7 +47,7 @@ const login = async (req, res) => {
 
     // Validate that all inputs are provided
     if (!(user.email && user.password)) {
-      return res.status(StatusCodes.OK).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs are required.",
         data: null,
       });
@@ -104,7 +104,7 @@ const changePassword = async (req, res) => {
         message: data.message,
       });
     }
-    return res.status(StatusCodes.BAD_REQUEST).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       message: "Data null",
     });
   } catch (error) {
@@ -112,7 +112,7 @@ const changePassword = async (req, res) => {
     console.error("Error changePassword:", error.message);
 
     // Return error message
-    res.status(StatusCodes.BAD_REQUEST).json({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: "Error from changePassword.",
       data: null,
     });
@@ -142,10 +142,10 @@ const changeInfor = async (req, res) => {
     if (data) {
       return res.status(data.code).json({
         message: data.message,
-        user: data.user,
+        data: data.user,
       });
     }
-    return res.status(StatusCodes.BAD_REQUEST).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       message: "Data null",
     });
   } catch (error) {
@@ -153,7 +153,7 @@ const changeInfor = async (req, res) => {
     console.error("Error change-infor:", error.message);
 
     // Return error message
-    res.status(StatusCodes.BAD_REQUEST).json({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: "Error from change-infor.",
       data: null,
     });
@@ -187,11 +187,11 @@ const resetPassword = async (req, res) => {
   try {
     let { codeVerify, newPassword } = req.body;
     if (!codeVerify && !newPassword) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs are required",
       });
     } else if (newPassword.length < 8 || newPassword.length > 32) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         message: "Length password must be between 8 and 32 characters",
       });
     }
