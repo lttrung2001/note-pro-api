@@ -101,7 +101,7 @@ const changePassword = async (req, res) => {
     // Return success message
     if (data) {
       return res.status(data.code).json({
-        refreshToken: data.refreshToken,
+        data: data.refreshToken,
         message: data.message,
       });
     }
