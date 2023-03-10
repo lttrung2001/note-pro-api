@@ -147,7 +147,7 @@ const changeInfor = async (req, res) => {
       });
     }
     return res.status(StatusCodes.NOT_FOUND).json({
-      message: "Data null",
+      message: "phoneNumber is too long or too short",
     });
   } catch (error) {
     // Log error message
