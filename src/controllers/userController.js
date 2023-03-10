@@ -101,6 +101,7 @@ const changePassword = async (req, res) => {
     // Return success message
     if (data) {
       return res.status(data.code).json({
+        data: data.refreshToken,
         message: data.message,
       });
     }
@@ -134,7 +135,7 @@ const changeInfor = async (req, res) => {
     }
 
     user.displayName = user.fullName;
-    user.phoneNumber = "+84" + user.phoneNumber.split("0")[1];
+    user.phoneNumber = "+84" + user.phoneNumber.substring(1);
 
     // Call service
     let data = await userServices.changeInfor(user);
@@ -146,7 +147,7 @@ const changeInfor = async (req, res) => {
       });
     }
     return res.status(StatusCodes.NOT_FOUND).json({
-      message: "Data null",
+      message: "phoneNumber is too long or too short",
     });
   } catch (error) {
     // Log error message

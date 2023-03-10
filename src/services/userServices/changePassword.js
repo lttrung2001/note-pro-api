@@ -14,8 +14,15 @@ const changePasswordService = async (userInput) => {
     user = credential.user;
     if (user && credential) {
       await updatePassword(user, userInput.newPassword);
+      let credentialNew = await signInWithEmailAndPassword(
+        firebaseAuth,
+        user.email,
+        userInput.newPassword
+      );
+      let userNew = credentialNew.user;
       return {
         message: "Successfully change user's password",
+        refreshToken: userNew.refreshToken,
         code: StatusCodes.OK,
       };
     }
@@ -28,4 +35,4 @@ const changePasswordService = async (userInput) => {
   }
 };
 
-export default changePasswordService
+export default changePasswordService;
