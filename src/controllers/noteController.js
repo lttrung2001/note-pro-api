@@ -7,7 +7,7 @@ const addNote = async (req, res) => {
   try {
     const uid = req.user.uid;
     const { title, content, isPin } = req.body;
-    if (!(title || content || isPin != null)) {
+    if (!((title || content || req.files)) && isPin === undefined) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs required.",
       });
@@ -32,7 +32,7 @@ const editNote = async (req, res) => {
     const uid = req.user.uid;
     const { id } = req.query;
     const { title, content, isPin, deleteImageIds } = req.body;
-    if (!(id && (title || content || isPin != null))) {
+    if (!((title || content || req.files)) && isPin === undefined) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs required.",
       });
