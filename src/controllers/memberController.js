@@ -19,11 +19,17 @@ const addMember = async (req, res) => {
         message: "This user haven't verify email yet.",
       });
     }
-    const member = new Member(null, role, false, uid);
+    const member = new Member(null, role, false, user.uid);
     const addMemberResult = await memberServices.addMember(noteId, member);
     res.status(StatusCodes.OK).json({
       message: "Add member successfully.",
-      data: addMemberResult,
+      data: {
+        id: addMemberResult.id,
+        role: addMemberResult.role,
+        fullName: user.displayName,
+        phoneNumber: user.phoneNumber,
+        email: user.email,
+      },
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
