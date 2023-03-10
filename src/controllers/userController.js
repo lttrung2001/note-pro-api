@@ -101,6 +101,7 @@ const changePassword = async (req, res) => {
     // Return success message
     if (data) {
       return res.status(data.code).json({
+        refreshToken: data.refreshToken,
         message: data.message,
       });
     }
@@ -134,7 +135,7 @@ const changeInfor = async (req, res) => {
     }
 
     user.displayName = user.fullName;
-    user.phoneNumber = "+84" + user.phoneNumber.split("0")[1];
+    user.phoneNumber = "+84" + user.phoneNumber.substring(1);
 
     // Call service
     let data = await userServices.changeInfor(user);
@@ -213,7 +214,7 @@ const getUserDetails = async (req, res) => {
     let data = await userServices.getUserDetails(uid);
     return res.status(data.code).json({
       message: data.message,
-      user: data.user,
+      data: data.user,
     });
   } catch (error) {
     console.log("error detail user", error.message);
