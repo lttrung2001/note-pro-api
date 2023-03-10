@@ -94,11 +94,18 @@ const deleteMember = async (req, res) => {
       noteId,
       uid
     );
+    const deletingMember = await memberServices.getMemberDetails(noteId, memberId);
     if (currentMember.role != "owner") {
       return res.status(StatusCodes.FORBIDDEN).json({
         message: "No permission.",
       });
     }
+    if (deletingMember.uid == uid) {
+      return res.status(StatusCodes.FORBIDDEN).json({
+        message: "Can not delete yourself.",
+      });
+    }
+    await memberServices.deleteMember(noteId, memberId);
     return res.status(StatusCodes.OK).json({
       message: "Delete member successfully.",
     });
