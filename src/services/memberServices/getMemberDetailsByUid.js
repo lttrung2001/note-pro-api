@@ -4,7 +4,7 @@ const getMemberDetailsByUidService = async (noteId, memberUid) => {
   try {
     const querySnapshot = firestore.collection("notes").doc(noteId).collection("members").where("uid", "==", memberUid).get();
     if (querySnapshot.size == 0) {
-      throw new Error("Member doesn't exists.");
+      return null;
     }
     const memberSnapshot = (await querySnapshot).docs[0];
     return {
