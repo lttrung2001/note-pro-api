@@ -20,14 +20,21 @@ const register = async (req, res) => {
         data: null,
       });
     }
-    // Call service
-    await userServices.register(newUser);
-    // Return success message
-    return res.status(StatusCodes.OK).json({
-      message:
-        "Now you have only one step. Let's verify your account by email, please",
-      data: null,
-    });
+
+    if (newUser.phoneNumber.length() !== 10) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Length of Phone Number must be 10 characters",
+      });
+    } else {
+      // Call service
+      await userServices.register(newUser);
+      // Return success message
+      return res.status(StatusCodes.OK).json({
+        message:
+          "Now you have only one step. Let's verify your account by email, please",
+        data: null,
+      });
+    }
   } catch (error) {
     // Log error message
     console.error("Error creating new user:", error.message);
