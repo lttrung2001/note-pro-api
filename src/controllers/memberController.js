@@ -9,17 +9,28 @@ const addMember = async (req, res) => {
     const { noteId } = req.query;
     const { email, role } = req.body;
     if (!(noteId && email, role)) {
-      res.status(StatusCodes.BAD_REQUEST).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         message: "Note ID, email and role required.",
       });
     }
     const user = await adminAuth.getUserByEmail(email);
+    if (user.uid == uid) {
+      return res.status(StatusCodes.CONFLICT).json({
+        message: "You can not add yourself.",
+      });
+    }
     if (!user.emailVerified) {
-      res.status(StatusCodes.FORBIDDEN).json({
+      return res.status(StatusCodes.FORBIDDEN).json({
         message: "This user haven't verify email yet.",
       });
     }
-    const member = new Member(null, role, false, user.uid);
+    let member = await memberServices.getMemberDetailsByUid(noteId, user.uid);
+    if (member != null) {
+      return res.status(StatusCodes.CONFLICT).json({
+        message: "This member already exists.",
+      });
+    }
+    member = new Member(null, role, false, user.uid);
     const addMemberResult = await memberServices.addMember(noteId, member);
     res.status(StatusCodes.OK).json({
       message: "Add member successfully.",
@@ -42,8 +53,8 @@ const editMember = async (req, res) => {
   try {
     const uid = req.user.uid;
     const { noteId, memberId } = req.query;
-    const { role } = req.body;
-    if (!(noteId && memberId && role)) {
+    const { role, isPin } = req.body;
+    if (!(noteId && memberId && role) || isPin === undefined) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs required.",
       });
@@ -56,16 +67,19 @@ const editMember = async (req, res) => {
       noteId,
       uid
     );
-    if (currentMember.role != "owner") {
-      return res.status(StatusCodes.FORBIDDEN).json({
-        message: "No permission.",
-      });
+    const isOwner = currentMember.role == "owner";
+    let member = null;
+    if (isOwner) {
+      member = new Member(memberId, role, null, null); 
+      member = await memberServices.editMember(noteId, member);
+    } else {
+      member = new Member(currentMember.id, null, isPin, null); 
+      member = await memberServices.editMember(noteId, member);
     }
-    let member = new Member(memberId, role, null, null);
-    member = await memberServices.editMember(noteId, member);
+    
     const user = await adminAuth.getUser(member.uid);
     return res.status(StatusCodes.OK).json({
-      message: "Edit note successfully.",
+      message: "Edit member successfully.",
       data: {
         id: member.id,
         fullName: user.displayName,
@@ -85,7 +99,7 @@ const deleteMember = async (req, res) => {
   try {
     const uid = req.user.uid;
     const { noteId, memberId } = req.query;
-    if (!(noteId && memberId && uid)) {
+    if (!(noteId && memberId)) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "All inputs required.",
       });
@@ -95,17 +109,17 @@ const deleteMember = async (req, res) => {
       uid
     );
     const deletingMember = await memberServices.getMemberDetails(noteId, memberId);
-    if (currentMember.role != "owner") {
+    const isOwner = currentMember.role == "owner";
+    if (isOwner && currentMember.role == deletingMember.role) {
       return res.status(StatusCodes.FORBIDDEN).json({
-        message: "No permission.",
+        message: "Owner can not be deleted.",
       });
     }
-    if (deletingMember.uid == uid) {
-      return res.status(StatusCodes.FORBIDDEN).json({
-        message: "Can not delete yourself.",
-      });
+    if (isOwner) {
+      await memberServices.deleteMember(noteId, memberId);
+    } else {
+      await memberServices.deleteMember(noteId, currentMember.id);
     }
-    await memberServices.deleteMember(noteId, memberId);
     return res.status(StatusCodes.OK).json({
       message: "Delete member successfully.",
     });
